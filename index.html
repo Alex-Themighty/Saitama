@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Masterclass: Choose Your Domain</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Math libraries and Graphing API (from A3000) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
+    <script>
+        MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script src="https://www.desmos.com/api/v1.8/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        /* =========================================
+           GLOBAL STYLES
+        ========================================= */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #E8F6FB;
+            
+            /* Custom SVG Background - Dark grey with 19% opacity */
+            background-image: url("data:image/svg+xml,%3Csvg width='400' height='400' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='rgba(64, 64, 64, 0.19)' font-family='Georgia, serif' font-size='22' font-style='italic'%3E%3Ctext x='50' y='80'%3E%E2%88%AB e^x dx%3C/text%3E%3Ctext x='250' y='120'%3EP(A|B)%3C/text%3E%3Ctext x='100' y='280'%3E%E2%88%91 x_i%3C/text%3E%3Ctext x='300' y='320'%3E%CE%BC %C2%B1 z%CF%83%3C/text%3E%3Ctext x='180' y='180'%3Elim x%E2%86%92%E2%88%9E%3C/text%3E%3Ctext x='40' y='220'%3E%E2%88%87%C2%B2%3C/text%3E%3Ctext x='320' y='60'%3E%CE%BB%3C/text%3E%3Ctext x='150' y='360'%3Ef'(x)%3C/text%3E%3C/g%3E%3C/svg%3E");
+            
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* =========================================
+           NAVIGATION STYLES (MATCHED TO A3000)
+        ========================================= */
+        /* Nav styles moved to css/style.css */
+
+        /* =========================================
+           HOMEPAGE CONTENT
+        ========================================= */
+        .home-container {
+            max-width: 1200px;
+            width: 100%;
+            padding: 13px 20px;
+            box-sizing: border-box;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .hero-title {
+            text-align: center;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.8em;
+            background: linear-gradient(to right, #2c3e50, #3498db);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.15rem;
+            color: #5d1966;
+            margin-bottom: 50px;
+            text-align: center;
+            font-style: italic;
+            max-width: 880px;
+            line-height: 1.6;
+            font-family: 'Georgia', serif;
+            font-weight: 700;
+            text-shadow: 1px 2px 6px rgba(0,0,0,0.12);
+        }
+
+        /* --- Split Cards --- */
+        .split-layout {
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+            gap: 40px;
+            width: 100%;
+        }
+
+        .domain-card {
+            background: white;
+            border-radius: 15px;
+            width: 45%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-top: 6px solid #3498db;
+        }
+
+        .domain-card.calculus { border-top-color: #cc0000; }
+        .domain-card.probability { border-top-color: #ff8c00; }
+
+        .domain-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+        }
+
+        .card-header {
+            padding: 25px;
+            text-align: center;
+            background: #fafafa;
+            border-bottom: 1px solid #eee;
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2rem;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .calculus .card-title { color: #cc0000; }
+        .probability .card-title { color: #ff8c00; }
+
+        .portrait-container {
+            width: 100%;
+            height: 460px; /* increased by 80px total (50 + 30) */
+            overflow: hidden;
+            background: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .portrait-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top;
+        }
+        .portrait-container a { display: block; width: 100%; height: 100%; }
+        .portrait-container a img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+
+        .card-body {
+            padding: 30px 25px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .figure-name {
+            font-family: 'Roboto Slab', serif;
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .bio-text {
+            font-family: "Calisto MT", "Bookman Old Style", Georgia, serif;
+            font-size: 1.1rem;
+            color: #444;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .works-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            margin-bottom: 25px;
+            flex-grow: 1;
+        }
+
+        .calculus .works-section { border-left-color: #cc0000; }
+        .probability .works-section { border-left-color: #ff8c00; }
+
+        .works-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .works-list {
+            margin: 0;
+            padding-left: 20px;
+            color: #34495e;
+            font-size: 0.95rem;
+            font-family: 'Roboto Slab', serif;
+        }
+
+        .enter-btn {
+            display: block;
+            text-align: center;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: opacity 0.2s;
+        }
+
+        .calculus .enter-btn { background-color: #cc0000; }
+        .probability .enter-btn { background-color: #ff8c00; }
+
+        .enter-btn:hover { opacity: 0.9; }
+
+        .or-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: bold;
+            color: #8e44ad;
+            font-size: 1.5rem;
+            width: 60px;
+        }
+
+        @media (max-width: 900px) {
+            .nav-container-tier-1 { flex-direction: column; gap: 20px; }
+            .header-links { gap: 10px; }
+            .split-layout { flex-direction: column; align-items: center; }
+            .domain-card { width: 100%; max-width: 600px; }
+            .or-divider { height: 60px; width: 100%; }
+            .sub-nav { position: static; transform: none; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav class="master-nav">
+    <div class="nav-container-tier-1">
+        
+        <!-- CALCULUS Section -->
+        <div class="header-group">
+            <a href="calculus.html#diff-theory" class="category-title title-calculus">CALCULUS</a>
+            <div class="header-links">
+                <div class="main-link">
+                    <a href="calculus.html#diff-theory" class="nav-label">DIFFERENTIATION</a>
+                    <div class="sub-nav">
+                        <a href="calculus.html#diff-theory">THEORY</a>
+                        <a href="calculus.html#diff-app">APPLICATION</a>
+                    </div>
+                </div>
+                <div class="main-link">
+                    <a href="calculus.html#int-theory" class="nav-label">INTEGRATION</a>
+                    <div class="sub-nav">
+                        <a href="calculus.html#int-theory">THEORY</a>
+                        <a href="calculus.html#int-app">APPLICATION</a>
+                        <a href="calculus.html#int-future">FUTURE CONCEPT</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Central Logo (Points back to homepage.html) -->
+        <a href="homepage.html" class="logo-link">
+            <img src="assets/logo.svg" class="nav-logo" alt="Masterclass Logo">
+        </a>
+
+        <!-- PROBABILITY Section -->
+        <div class="header-group">
+            <a href="prob-homepage.html" class="category-title title-prob">PROBABILITY</a>
+            <div class="header-links">
+                <div class="main-link">
+                    <span class="nav-label">DISCRETE<br>DISTRIBUTION</span>
+                    <div class="sub-nav">
+                        <a href="probability.html#binomial">BINOMIAL DISTRIBUTION</a>
+                        <a href="probability.html#poisson">POISSON DISTRIBUTION</a>
+                        <a href="probability.html#geometric">GEOMETRIC DISTRIBUTION</a>
+                        <a href="probability.html#hyper">HYPERGEOMETRIC DISTRIBUTION</a>
+                    </div>
+                </div>
+                
+                <div class="main-link">
+                    <span class="nav-label">CONTINUOUS<br>DISTRIBUTION</span>
+                    <div class="sub-nav">
+                        <a href="probability.html#normal">NORMAL DISTRIBUTION</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</nav>
+
+<div class="home-container">
+    <h1 class="hero-title">Select Your Masterclass</h1>
+    <p class="hero-subtitle">"Do not worry about your difficulties in mathematics. I assure you mine are greater." <br>- A. Einstein -</p>
+
+    <div class="split-layout">
+        
+        <!-- CALCULUS CARD (NEWTON) -->
+        <div class="domain-card calculus">
+            <div class="card-header">
+                <h2 class="card-title">Calculus</h2>
+            </div>
+            
+            <div class="portrait-container">
+                <a href="https://en.wikipedia.org/wiki/Isaac_Newton" target="_blank" rel="noopener noreferrer" title="Sir Isaac Newton — Wikipedia">
+                    <img src="assets/isaac.jpg" alt="Portrait of Sir Isaac Newton">
+                </a>
+            </div>
+            
+            <div class="card-body">
+                <h3 class="figure-name">Sir Isaac Newton</h3>
+                <p class="bio-text">
+                    English mathematician, physicist, and astronomer. He independently formulated the laws of motion and universal gravitation, and is widely credited as one of the fundamental co-inventors of Calculus.
+                </p>
+                
+                <div class="works-section">
+                    <div class="works-title">Notable Works:</div>
+                    <ul class="works-list">
+                        <li><em>Philosophiæ Naturalis Principia Mathematica</em> (1687)</li>
+                        <li><em>Method of Fluxions</em> (1671)</li>
+                    </ul>
+                </div>
+                
+                <a href="calculus.html" class="enter-btn">Enter Calculus</a>
+            </div>
+        </div>
+
+        <div class="or-divider">OR</div>
+
+        <!-- PROBABILITY CARD (KOLMOGOROV) -->
+        <div class="domain-card probability">
+            <div class="card-header">
+                <h2 class="card-title">Probability</h2>
+            </div>
+            
+            <div class="portrait-container">
+                <a href="https://en.wikipedia.org/wiki/Andrey_Kolmogorov" target="_blank" rel="noopener noreferrer" title="Andrey Kolmogorov — Wikipedia">
+                    <img src="assets/andrey.jpg" alt="Portrait of Andrey Kolmogorov">
+                </a>
+            </div>
+            
+            <div class="card-body">
+                <h3 class="figure-name">Andrey Kolmogorov</h3>
+                <p class="bio-text">
+                    Soviet mathematician who made major contributions to probability theory, topology, and intuitionistic logic. He rigorously established the axiomatic foundations of probability theory we use today.
+                </p>
+                
+                <div class="works-section">
+                    <div class="works-title">Notable Works:</div>
+                    <ul class="works-list">
+                        <li><em>Foundations of the Theory of Probability</em> (1933)</li>
+                        <li><em>Kolmogorov's Axioms</em></li>
+                    </ul>
+                </div>
+                
+                <a href="prob-homepage.html" class="enter-btn">Enter Probability</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

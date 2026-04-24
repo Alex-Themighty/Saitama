@@ -1,0 +1,2863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Masterclass: Calculus & Probability</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">
+    
+    <!-- Math libraries and Graphing API -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
+    <script>
+        MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script src="https://www.desmos.com/api/v1.8/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        /* =========================================
+           GLOBAL PAGE LAYOUT
+        ========================================= */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 0 0 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+        /* Nav styles moved to css/style.css */
+
+        /* =========================================
+           TYPOGRAPHY & HEADINGS
+        ========================================= */
+        h1 {
+            text-align: center;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.8em;
+            background: linear-gradient(to right, #2c3e50, #3498db);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+        h2, h3 { text-align: center; color: #2c3e50; }
+        
+        .credit-line, .developer-credit {
+            text-align: center;
+            color: #7f3e8f;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 0;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .section-title {
+            font-family: 'Roboto Slab', serif;
+            text-transform: uppercase;
+            font-size: 1.8em;
+            background: linear-gradient(to right, #2980b9, #8e44ad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            border-bottom: 2px solid #e1e8ed;
+            padding-bottom: 10px;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        /* =========================================
+           PAGE VIEWS & TABS
+        ========================================= */
+        .page-view { display: none; }
+        .page-view.active { display: block; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .tabs, .tab-container {
+            display: flex;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            color: #7f8c8d;
+            border-bottom: 3px solid transparent;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.3s;
+            flex: 1;
+            text-align: center;
+            min-width: 150px;
+            font-weight: bold;
+        }
+        .tab-btn:hover:not(.active) { color: #3498db; background-color: #f8fbfd; }
+        .tab-btn.active {
+            color: #2980b9;
+            background: linear-gradient(to top, #ffffff, #e0f2fe);
+            border-bottom: 3px solid #3498db;
+            font-weight: bold;
+        }
+
+        /* =========================================
+           TABLES
+        ========================================= */
+        .rules-table-wrapper { display: flex; gap: 20px; margin-bottom: 30px; align-items: flex-start; }
+        .rules-table-container { flex: 1; overflow-x: auto; }
+        
+        .rules-table-format, .rule-table {
+            width: 100%; border-collapse: collapse; background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02); border-radius: 8px; overflow: hidden; margin-bottom: 30px;
+        }
+        .rules-table-format th, .rules-table-format td, .rule-table th, .rule-table td {
+            padding: 12px 15px; border: 1px solid #e8e8e8; text-align: left; vertical-align: middle;
+        }
+        .rules-table-format th, .rule-table th { background-color: #3498db; color: white; font-weight: bold; }
+        .rules-table-format tr:nth-child(even), .rule-table tr:nth-child(even) { background-color: #fdfefe; }
+        .rules-table-format tr:hover { background-color: #f4f9fc; }
+        .rules-table-format td strong { color: #e67e22; }
+        .rule-id { font-weight: bold; color: #e74c3c; white-space: nowrap; }
+
+        /* =========================================
+           SOLVER & CALCULATOR UI
+        ========================================= */
+        .solver-section, .calculator-section {
+            background: #f9fbfa; padding: 25px; border-radius: 8px; border: 1px solid #e1e8ed;
+            border-top: 4px solid #d9534f; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .input-group { margin-bottom: 15px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .input-group label { display: block; margin-bottom: 8px; font-weight: bold; color: #34495e; }
+        .input-group input, input[type="text"] {
+            width: 100%; padding: 10px; border: 1px solid #bdc3c7; border-radius: 5px;
+            font-size: 14px; font-family: monospace; box-sizing: border-box; transition: border-color 0.3s;
+        }
+        .input-group input:focus { border-color: #3498db; outline: none; }
+        .main-func { flex-grow: 1; }
+        .small-input { width: 100px; }
+
+        .btn {
+            background: linear-gradient(135deg, #3498db 0%, #9b59b6 100%); color: white; border: none;
+            padding: 12px 25px; font-size: 16px; border-radius: 30px; cursor: pointer; width: 100%;
+            transition: transform 0.2s, box-shadow 0.2s; font-weight: bold; box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(155, 89, 182, 0.4); }
+        
+        button.calc-btn {
+            background-color: #d9534f; color: white; border: none; padding: 10px 20px;
+            font-size: 1rem; border-radius: 4px; cursor: pointer; font-weight: bold; white-space: nowrap;
+        }
+        button.calc-btn:hover { background-color: #c9302c; }
+        button.action-btn { background-color: #3498db; }
+        button.action-btn:hover { background-color: #2980b9; }
+
+        /* =========================================
+           STEPS & FEEDBACK UI
+        ========================================= */
+        .steps-wrapper {
+            background: white; padding: 20px; border-radius: 6px; margin-top: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); font-size: 1.05em; max-width: 100%; overflow-x: auto;
+        }
+        .steps-container { border-left: 4px solid #e74c3c; padding-left: 20px; display: flex; flex-direction: column; gap: 20px; }
+        .step-box {
+            background: white; border-left: 5px solid #3498db; padding: 15px 20px; margin-bottom: 15px;
+            border-radius: 0 5px 5px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.05); opacity: 0;
+            transform: translateY(10px); animation: slideIn 0.5s forwards;
+        }
+        .step-block { border-bottom: 1px dotted #ccc; padding-bottom: 20px; font-size: 1.1rem; margin-bottom: 20px; }
+        .step-block:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+        .step-title {
+            font-weight: bold; color: #e67e22; margin-bottom: 10px; font-size: 1.1em;
+            display: flex; align-items: center; gap: 10px; text-transform: uppercase;
+        }
+        .step-label {
+            font-weight: bold; color: #2980b9; margin-bottom: 10px; font-size: 1.1em;
+            display: flex; align-items: center; gap: 10px; text-transform: uppercase;
+        }
+        .rule-tag { background: #fdf2cd; color: #d35400; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
+        .components-box { background: #f8f9fa; padding: 15px; border-left: 3px solid #3498db; border-radius: 4px; font-size: 1.1rem; overflow-x: auto; }
+        .final-answer-box { background: #fcf4ec; padding: 20px; border-radius: 6px; }
+        
+        .error-box { background: #fdf2f2; border-left: 5px solid #d63031; color: #c0392b; padding: 20px; margin-top: 20px; border-radius: 6px; font-weight: bold; }
+        .error-details { font-size: 0.85em; color: #900; display: block; margin-top: 8px; font-weight: normal; font-family: monospace; background: #fce8e8; padding: 8px; border-radius: 4px; }
+        
+        @keyframes slideIn { to { opacity: 1; transform: translateY(0); } }
+
+        /* =========================================
+           EXTRA TOOLS
+        ========================================= */
+        .tool-card {
+            background: white; border: 1px solid #ddd; padding: 20px; border-radius: 6px; margin-bottom: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        .tool-card h4 { margin-top: 0; color: #2c3e50; border-bottom: 1px solid #ecf0f1; padding-bottom: 10px; font-size: 1.15rem; }
+        .analysis-result { border-left: 4px solid #e74c3c; padding-left: 20px; margin-top: 20px; }
+        .analysis-subtitle { font-weight: bold; color: #2980b9; margin-top: 15px; margin-bottom: 10px; text-transform: uppercase; font-size: 0.9rem; }
+        .conclusion-box { background: #f9f9f9; border-left: 5px solid #8e44ad; padding: 15px; margin-top: 15px; font-weight: normal; color: #333; }
+        ::-webkit-scrollbar { height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #bdc3c7; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav class="master-nav">
+    <div class="nav-container-tier-1">
+        
+        <!-- CALCULUS Section -->
+        <div class="header-group">
+            <a href="#diff-theory" class="category-title title-calculus">CALCULUS</a>
+            <div class="header-links">
+                <div class="main-link">
+                    <a href="#diff-theory" class="nav-label">DIFFERENTIATION</a>
+                    <div class="sub-nav">
+                        <a href="#diff-theory">THEORY</a>
+                        <a href="#diff-app">APPLICATION</a>
+                    </div>
+                </div>
+                <div class="main-link">
+                    <a href="#int-theory" class="nav-label">INTEGRATION</a>
+                    <div class="sub-nav">
+                        <a href="#int-theory">THEORY</a>
+                        <a href="#int-app">APPLICATION</a>
+                        <a href="#int-future">FUTURE CONCEPT</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Central Logo -->
+        <a href="homepage.html" class="logo-link">
+            <img src="assets/logo.svg" class="nav-logo" alt="Masterclass Logo">
+        </a>
+
+        <!-- PROBABILITY Section -->
+        <div class="header-group">
+            <a href="prob-homepage.html" class="category-title title-prob">PROBABILITY</a>
+            <div class="header-links">
+                <div class="main-link">
+                    <span class="nav-label">DISCRETE<br>DISTRIBUTION</span>
+                    <div class="sub-nav">
+                        <a href="#prob-placeholder">BINOMIAL DISTRIBUTION</a>
+                        <a href="#prob-placeholder">POISSON DISTRIBUTION</a>
+                        <a href="#prob-placeholder">GEOMETRIC DISTRIBUTION</a>
+                        <a href="#prob-placeholder">HYPERGEOMETRIC DISTRIBUTION</a>
+                    </div>
+                </div>
+                
+                <div class="main-link">
+                    <span class="nav-label">CONTINUOUS<br>DISTRIBUTION</span>
+                    <div class="sub-nav">
+                        <a href="#prob-placeholder">NORMAL DISTRIBUTION</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</nav>
+
+<!-- Main Container -->
+<div class="container">
+
+    <!-- ========================================== -->
+    <!-- DIFFERENTIATION PAGE                       -->
+    <!-- ========================================== -->
+    <div id="page-differentiation" class="page-view active">
+        <h1>Differentiation Masterclass</h1>
+        <p class="developer-credit">Developed by Alex theMighty for Education Purposes</p>
+        
+        <div class="tab-container">
+            <button id="btn-diff-theory" class="tab-btn active" onclick="openTab('diff-tab-theory', this)">1. Theory & Solver</button>
+            <button id="btn-diff-app" class="tab-btn" onclick="openTab('diff-tab-applications', this)">2. Applications</button>
+        </div>
+
+        <!-- DIFF: Theory & Solver -->
+        <div id="diff-tab-theory" class="tab-content active">
+            <h2 class="section-title">Theory: The Comprehensive Formulas</h2>
+            
+            <div class="rules-table-wrapper">
+                <div class="rules-table-container">
+                    <table class="rule-table">
+                        <thead>
+                            <tr>
+                                <th width="20%">Rule ID</th>
+                                <th width="40%">Standard Rule $(x)$</th>
+                                <th width="40%">Chain Rule $(u)$</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="rule-id">Rule 1: Power</td><td>$(x^\alpha)' = \alpha x^{\alpha-1}$</td><td>$(u^\alpha)' = \alpha u^{\alpha-1} \cdot u'$</td></tr>
+                            <tr><td class="rule-id">Rule 2: Sqrt</td><td>$(\sqrt{x})' = \frac{1}{2\sqrt{x}}$</td><td>$(\sqrt{u})' = \frac{u'}{2\sqrt{u}}$</td></tr>
+                            <tr><td class="rule-id">Rule 3: Inverse</td><td>$(\frac{1}{x})' = -\frac{1}{x^2}$</td><td>$(\frac{1}{u})' = -\frac{u'}{u^2}$</td></tr>
+                            <tr><td class="rule-id">Rule 4: Sine</td><td>$(\sin x)' = \cos x$</td><td>$(\sin u)' = u' \cdot \cos u$</td></tr>
+                            <tr><td class="rule-id">Rule 5: Cosine</td><td>$(\cos x)' = -\sin x$</td><td>$(\cos u)' = -u' \cdot \sin u$</td></tr>
+                            <tr><td class="rule-id">Rule 6: Tangent</td><td>$(\tan x)' = \frac{1}{\cos^2 x}$</td><td>$(\tan u)' = \frac{u'}{\cos^2 u}$</td></tr>
+                            <tr><td class="rule-id">Rule 7: Cotangent</td><td>$(\cot x)' = -\frac{1}{\sin^2 x}$</td><td>$(\cot u)' = -\frac{u'}{\sin^2 u}$</td></tr>
+                            <tr><td class="rule-id">Rule 8: Exp (e)</td><td>$(e^x)' = e^x$</td><td>$(e^u)' = u' \cdot e^u$</td></tr>
+                            <tr><td class="rule-id">Rule 9: Exp (a)</td><td>$(a^x)' = a^x \ln a$</td><td>$(a^u)' = u' \cdot a^u \ln a$</td></tr>
+                            <tr><td class="rule-id">Rule 10: Ln</td><td>$(\ln x)' = \frac{1}{x}$</td><td>$(\ln u)' = \frac{u'}{u}$</td></tr>
+                            <tr><td class="rule-id">Rule 11: Log (a)</td><td>$(\log_a x)' = \frac{1}{x \ln a}$</td><td>$(\log_a u)' = \frac{u'}{u \ln a}$</td></tr>
+                            <tr><td class="rule-id">Rule 12: Product</td><td colspan="2">$(fg)' = f'g + fg'$</td></tr>
+                            <tr><td class="rule-id">Rule 13: Quotient</td><td colspan="2">$\left(\frac{f}{g}\right)' = \frac{f'g - fg'}{g^2}$</td></tr>
+                            <tr><td class="rule-id">Rule 14: Logarithmic Diff</td><td colspan="2">$(u^v)' = u^v \left[ v' \ln(u) + v \frac{u'}{u} \right]$</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="calculator-section">
+                <h2 style="text-align: left; margin-top: 0;">Live Solver Engine</h2>
+                <div class="input-group">
+                    <label>Function $f(x)$:</label>
+                    <input type="text" id="funcInput1" class="main-func" value="log(3x-2, 5)" onkeypress="if(event.key === 'Enter') solveDerivative()">
+                    <button class="calc-btn" onclick="solveDerivative()">Solve</button>
+                </div>
+                <div id="calcResult1"></div>
+            </div>
+        </div>
+
+        <!-- DIFF: Applications -->
+        <div id="diff-tab-applications" class="tab-content">
+            <h2 class="section-title">Applications of Differentiation</h2>
+            
+            <div class="calculator-section">
+                <div class="input-group" style="margin-bottom: 25px;">
+                    <strong style="margin-right: 10px;">Master Function $f(x) =$</strong> 
+                    <input type="text" id="appFunc" class="main-func" value="3x^4 - 3">
+                </div>
+                
+                <div class="tool-card">
+                    <h4>Tool 1: Gradient Tool</h4>
+                    <p style="font-size: 0.85rem; color: #555; margin-top:-5px; margin-bottom: 15px;">You can use numbers, fractions, or exact symbols like <code>sqrt(2)</code> or <code>pi/4</code>.</p>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <strong>Instantaneous Gradient:</strong> Find the exact slope at a specific point.
+                        <div class="input-group" style="margin-top: 10px;">
+                            $x = $ <input type="text" id="instX" class="small-input" value="pi/4" onkeypress="if(event.key === 'Enter') calcInstantaneous()">
+                            <button class="calc-btn action-btn" onclick="calcInstantaneous()">Calculate</button>
+                        </div>
+                        <div id="instResult" style="display:none; margin-top: 10px;"></div>
+                    </div>
+                    
+                    <hr style="border: 0; border-top: 1px solid #e1e1e1; margin: 20px 0;">
+                    
+                    <div>
+                        <strong>Average Gradient:</strong> Find the secant slope between two points.
+                        <div class="input-group" style="margin-top: 10px;">
+                            $x_1 = $ <input type="text" id="avgX1" class="small-input" value="0" onkeypress="if(event.key === 'Enter') calcAverage()">
+                            $x_2 = $ <input type="text" id="avgX2" class="small-input" value="pi/2" onkeypress="if(event.key === 'Enter') calcAverage()">
+                            <button class="calc-btn action-btn" onclick="calcAverage()">Calculate</button>
+                        </div>
+                        <div id="avgResult" style="display:none; margin-top: 10px;"></div>
+                    </div>
+                </div>
+
+                <div class="tool-card">
+                    <h4>Tool 2: Stationary Points Tool</h4>
+                    <p style="font-size: 0.95rem; color: #555;">Automatically finds stationary points ($f'(x) = 0$) and determines their nature with a full rule breakdown.</p>
+                    <button class="btn" style="background: linear-gradient(135deg, #8e44ad 0%, #3498db 100%); margin-top: 10px;" onclick="findAndAnalyzeStationaryPoints()">Find & Analyze Turning Points</button>
+                    <div id="statPointsResult" style="display:none; margin-top: 20px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- INTEGRATION PAGE                           -->
+    <!-- ========================================== -->
+    <div id="page-integration" class="page-view">
+        <h1>Calculus: Integration Masterclass</h1>
+        <p class="credit-line">Developed by Alex theMighty for Education Purposes</p>
+        
+        <div class="tabs">
+            <button id="btn-int-theory" class="tab-btn active" onclick="openTab('int-theory', this)">1. Theory & Solver</button>
+            <button id="btn-int-app" class="tab-btn" onclick="openTab('int-apps', this)">2. Applications</button>
+            <button id="btn-int-future" class="tab-btn" onclick="openTab('int-future', this)">3. Future Concept</button>
+        </div>
+
+        <!-- INT: Theory & Solver -->
+        <div id="int-theory" class="tab-content active">
+            <h2 class="section-title">Integration Rules & Formulas</h2>
+            
+            <div class="rules-table-wrapper">
+                <div class="rules-table-container">
+                    <table class="rules-table-format">
+                        <thead>
+                            <tr>
+                                <th width="15%">Rule</th>
+                                <th width="35%">Basic Form (dx)</th>
+                                <th width="50%">General Form (u)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><strong>A. Constant Multiple</strong></td><td colspan="2" style="text-align: center;">$\int k \cdot f(x) \, dx = k \int f(x) \, dx$</td></tr>
+                            <tr><td><strong>B. Sum / Difference</strong></td><td colspan="2" style="text-align: center;">$\int [f(x) \pm g(x)] \, dx = \int f(x) \, dx \pm \int g(x) \, dx$</td></tr>
+                            <tr><td><strong>C. Constant Rule</strong></td><td>$\int a \, dx = ax + C$</td><td>$\int a \, du = au + C$</td></tr>
+                            <tr><td><strong>1. Power Rule</strong></td><td>$\int x^n \, dx = \frac{x^{n+1}}{n+1} + C \quad (n \neq -1)$</td><td>$\int u^n \, dx = \frac{1}{u'} \frac{u^{n+1}}{n+1} + C \quad (n \neq -1)$</td></tr>
+                            <tr><td><strong>2. 1/u Rule</strong></td><td>$\int \frac{1}{x} \, dx = \ln|x| + C$</td><td>$\int \frac{1}{u} \, dx = \frac{1}{u'} \ln|u| + C$</td></tr>
+                            <tr><td><strong>3. Exponential (Base $e$)</strong></td><td>$\int e^x \, dx = e^x + C$</td><td>$\int e^u \, dx = \frac{1}{u'} e^u + C$</td></tr>
+                            <tr><td><strong>4. Exponential (Base $a$)</strong></td><td>$\int a^x \, dx = \frac{a^x}{\ln a} + C$</td><td>$\int a^u \, dx = \frac{1}{u'} \frac{a^u}{\ln a} + C$</td></tr>
+                            <tr><td><strong>5. Sine</strong></td><td>$\int \sin x \, dx = -\cos x + C$</td><td>$\int \sin u \, dx = -\frac{1}{u'} \cos u + C$</td></tr>
+                            <tr><td><strong>6. Cosine</strong></td><td>$\int \cos x \, dx = \sin x + C$</td><td>$\int \cos u \, dx = \frac{1}{u'} \sin u + C$</td></tr>
+                            <tr><td><strong>7. Inverse Cosine Sq.</strong></td><td>$\int \frac{1}{\cos^2 x} \, dx = \tan x + C$</td><td>$\int \frac{1}{\cos^2 u} \, dx = \frac{1}{u'} \tan u + C$</td></tr>
+                            <tr><td><strong>8. Inverse Sine Sq.</strong></td><td>$\int \frac{1}{\sin^2 x} \, dx = -\cot x + C$</td><td>$\int \frac{1}{\sin^2 u} \, dx = -\frac{1}{u'} \cot u + C$</td></tr>
+                            <tr><td><strong>9. Tangent</strong></td><td>$\int \tan x \, dx = -\ln|\cos x| + C$</td><td>$\int \tan u \, dx = -\frac{1}{u'} \ln|\cos u| + C$</td></tr>
+                            <tr><td><strong>10. Cotangent</strong></td><td>$\int \cot x \, dx = \ln|\sin x| + C$</td><td>$\int \cot u \, dx = \frac{1}{u'} \ln|\sin u| + C$</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="solver-section">
+                <h2 style="text-align: left; margin-top: 0;">Live Integration Solver</h2>
+                
+                <div class="input-group">
+                    <label style="width: 100%;">Master Function $f(x)$:</label>
+                    <input type="text" id="masterFunctionInt" value="1 / (3 * tan(3x))" placeholder="e.g., 3x^2 + e^(-x)" onkeypress="if(event.key === 'Enter') solveIntegration()">
+                </div>
+                
+                <div class="input-group" style="align-items: flex-start;">
+                    <div style="flex: 1;">
+                        <label>Coordinate $x$ (Optional, to find $C$):</label>
+                        <input type="text" id="pointX" placeholder="e.g., 0, pi, ln(2)" onkeypress="if(event.key === 'Enter') solveIntegration()">
+                    </div>
+                    <div style="flex: 1;">
+                        <label>Coordinate $y$ (Optional, to find $C$):</label>
+                        <input type="text" id="pointY" placeholder="e.g., 5, e" onkeypress="if(event.key === 'Enter') solveIntegration()">
+                    </div>
+                </div>
+                
+                <button class="btn" style="margin-top: 15px;" onclick="solveIntegration()">Solve Integration</button>
+                
+                <div id="integration-result" style="display: none; margin-top: 20px;"></div>
+            </div>
+        </div>
+
+        <!-- INT: Applications -->
+        <div id="int-apps" class="tab-content">
+            <h2 class="section-title">Application: Area Under a Curve</h2>
+            
+            <div class="solver-section">
+                <p style="margin-bottom: 20px;">Using the Definite Integral to calculate the net area between the function curve and the x-axis.</p>
+                <div class="input-group">
+                    <label style="width: 100%;">Function $f(x)$:</label>
+                    <input type="text" id="appFunctionInt" value="1 / (3 * tan(3x))" placeholder="e.g., x^2" onkeypress="if(event.key === 'Enter') solveDefiniteIntegral()">
+                </div>
+                <div class="input-group" style="align-items: flex-start;">
+                    <div style="flex: 1;">
+                        <label>Lower Bound ($a$):</label>
+                        <input type="text" id="lowerBound" value="0" placeholder="e.g., 0, -pi" onkeypress="if(event.key === 'Enter') solveDefiniteIntegral()">
+                    </div>
+                    <div style="flex: 1;">
+                        <label>Upper Bound ($b$):</label>
+                        <input type="text" id="upperBound" value="1" placeholder="e.g., 3, ln(5)" onkeypress="if(event.key === 'Enter') solveDefiniteIntegral()">
+                    </div>
+                </div>
+                <button class="btn" style="margin-top: 15px;" onclick="solveDefiniteIntegral()">Calculate Area & Graph</button>
+                
+                <div id="def-integral-result" style="display: none; margin-top: 20px;"></div>
+                <div id="desmos-under-curve" style="width: 100%; height: 400px; margin-top: 20px; border-radius: 8px; border: 1px solid #bdc3c7; display: none;"></div>
+            </div>
+
+            <!-- Tool 2: Area Between Curves -->
+            <div class="solver-section" style="margin-top: 30px;">
+                <h2 style="text-align: left; margin-top: 0;">2. Area Between Two Curves</h2>
+                <p style="margin-bottom: 20px;">Calculate the net bounded algebraic area between a top and bottom function over a specific interval.</p>
+                
+                <div class="input-group" style="align-items: flex-start;">
+                    <div style="flex: 1;">
+                        <label>Top Function $f(x)$:</label>
+                        <input type="text" id="appFuncTop" value="x^2 + 2" placeholder="e.g., x^2 + 2" onkeypress="if(event.key === 'Enter') solveAreaBetweenCurves()">
+                    </div>
+                    <div style="flex: 1;">
+                        <label>Bottom Function $g(x)$:</label>
+                        <input type="text" id="appFuncBottom" value="x" placeholder="e.g., x" onkeypress="if(event.key === 'Enter') solveAreaBetweenCurves()">
+                    </div>
+                </div>
+                <div class="input-group" style="align-items: flex-start;">
+                    <div style="flex: 1;">
+                        <label>Lower Bound ($a$):</label>
+                        <input type="text" id="lowerBoundC" value="0" placeholder="e.g., 0" onkeypress="if(event.key === 'Enter') solveAreaBetweenCurves()">
+                    </div>
+                    <div style="flex: 1;">
+                        <label>Upper Bound ($b$):</label>
+                        <input type="text" id="upperBoundC" value="2" placeholder="e.g., 2" onkeypress="if(event.key === 'Enter') solveAreaBetweenCurves()">
+                    </div>
+                </div>
+                <button class="btn" style="margin-top: 15px;" onclick="solveAreaBetweenCurves()">Calculate Area & Graph</button>
+                
+                <div id="area-curves-result" style="display: none; margin-top: 20px;"></div>
+                <div id="desmos-between-curves" style="width: 100%; height: 400px; margin-top: 20px; border-radius: 8px; border: 1px solid #bdc3c7; display: none;"></div>
+            </div>
+        </div>
+
+        <!-- INT: Future Concept -->
+        <div id="int-future" class="tab-content">
+            <h2 class="section-title">Future Concept</h2>
+            <div style="padding: 50px; text-align: center; color: #7f8c8d; font-size: 1.2em; border: 2px dashed #bdc3c7; border-radius: 10px; margin-top: 20px;">
+                <p>This space is reserved for future updates and advanced topics (e.g., Volumes of Revolution, Arc Length).</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PROBABILITY PAGE (PLACEHOLDER)             -->
+    <!-- ========================================== -->
+    <div id="page-probability" class="page-view">
+        <h1>Probability Masterclass</h1>
+        <p class="credit-line">Under Construction</p>
+        <div style="padding: 50px; text-align: center; color: #7f8c8d; font-size: 1.2em; border: 2px dashed #bdc3c7; border-radius: 10px; margin-top: 20px;">
+            <p>The Probability modules (Binomial, Poisson, Normal, etc.) are currently being built and will be available soon.</p>
+        </div>
+    </div>
+
+</div>
+
+<!-- ========================================== -->
+<!-- CORE JAVASCRIPT LOGIC                      -->
+<!-- ========================================== -->
+<script>
+    // ==========================================
+    // 1. ROUTING & TAB NAVIGATION LOGIC
+    // ==========================================
+    function switchPage(pageId) {
+        document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+        const page = document.getElementById(pageId);
+        if (page) page.classList.add('active');
+    }
+
+    function openTab(tabId, btn) {
+        const page = btn.closest('.page-view');
+        page.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        page.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        
+        document.getElementById(tabId).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    function handleNavigationHash() {
+        const hash = window.location.hash || '#diff-theory';
+        
+        if (hash.startsWith('#diff')) {
+            switchPage('page-differentiation');
+            if (hash === '#diff-theory') openTab('diff-tab-theory', document.getElementById('btn-diff-theory'));
+            if (hash === '#diff-app') openTab('diff-tab-applications', document.getElementById('btn-diff-app'));
+        } 
+        else if (hash.startsWith('#int')) {
+            switchPage('page-integration');
+            if (hash === '#int-theory') openTab('int-theory', document.getElementById('btn-int-theory'));
+            if (hash === '#int-app') openTab('int-apps', document.getElementById('btn-int-app'));
+            if (hash === '#int-future') openTab('int-future', document.getElementById('btn-int-future'));
+        }
+        else if (hash.startsWith('#prob') || hash.includes('placeholder')) {
+            switchPage('page-probability');
+        } else {
+            switchPage('page-differentiation');
+            openTab('diff-tab-theory', document.getElementById('btn-diff-theory'));
+        }
+    }
+
+    window.addEventListener('load', handleNavigationHash);
+    window.addEventListener('hashchange', handleNavigationHash);
+
+    // ==========================================
+    // 2. SHARED UTILITIES
+    // ==========================================
+    
+    // --- ENGINE CORE FIXES (V1.7 AST Engine) ---
+
+    // 1. Sanitize text input before parsing
+    function sanitize(raw) {
+        let str = raw.replace(/\[/g, '(').replace(/\]/g, ')').replace(/\{/g, '(').replace(/\}/g, ')');
+        str = str.replace(/ln/g, 'log');
+        return str;
+    }
+
+    // 2. Safely parse and rewrite 2-arg logs to avoid math.js backend crash
+    function safeParse(inputStr) {
+        let node = math.parse(inputStr);
+        node.traverse(function (n) {
+            if (n.type === 'FunctionNode' && n.fn.name === 'log' && n.args.length === 2) {
+                // Rename log(a,b) to a dummy function so math.js stops panicking
+                n.fn.name = 'logBase'; 
+            }
+        });
+        return node;
+    }
+
+    // 3. Safely calculate derivatives by feeding math.js natural log division
+    function safeDerivative(node) {
+        let backendNode = node.transform(function(n) {
+            if (n.type === 'FunctionNode' && n.fn.name === 'logBase') {
+                return math.parse(`(log((${n.args[0].toString()})) / log((${n.args[1].toString()})))`);
+            }
+            return n;
+        });
+        return math.derivative(backendNode, 'x');
+    }
+
+    // 4. Safely evaluate functions (Part 2) using natural log division
+    function safeEvaluate(node, scope) {
+        let backendNode = node.transform(function(n) {
+            if (n.type === 'FunctionNode' && n.fn.name === 'logBase') {
+                return math.parse(`(log((${n.args[0].toString()})) / log((${n.args[1].toString()})))`);
+            }
+            return n;
+        });
+        return backendNode.evaluate(scope);
+    }
+
+    // 5. Custom LaTeX Renderer to beautifully format our dummy function and ln()
+    const texOptions = {
+        handler: function (n, options) {
+            if (n.type === 'FunctionNode' && n.fn.name === 'logBase') {
+                return '\\log_{' + n.args[1].toTex(options) + '}\\left(' + n.args[0].toTex(options) + '\\right)';
+            }
+            if (n.type === 'FunctionNode' && n.fn.name === 'log' && n.args.length === 1) {
+                return '\\ln\\left(' + n.args[0].toTex(options) + '\\right)';
+            }
+        }
+    };
+
+    function isX(node) {
+        return node && node.type === 'SymbolNode' && node.name === 'x';
+    }
+
+    // RECOGNIZES FRACTIONS, PI MULTIPLES, AND IRRATIONALS
+    function recognizeExact(val, tolerance = 1e-5) {
+        if (Math.abs(val) < tolerance) return "0";
+        let sign = val < 0 ? "-" : "";
+        val = Math.abs(val);
+
+        function getFraction(num) {
+            if (num < 1e-10) return {num: 0, den: 1};
+            let h1 = 1, h2 = 0, k1 = 0, k2 = 1;
+            let b = num;
+            for (let i = 0; i < 20; i++) {
+                let a = Math.floor(b);
+                let aux = h1; h1 = a * h1 + h2; h2 = aux;
+                aux = k1; k1 = a * k1 + k2; k2 = aux;
+                if (Math.abs(num - h1 / k1) <= tolerance) break;
+                if (b - a < 1e-10) break; 
+                b = 1 / (b - a);
+            }
+            if (k1 <= 150) return { num: h1, den: k1 };
+            return null;
+        }
+
+        let frac = getFraction(val);
+        if (frac && frac.num !== 0) {
+            if (frac.den === 1) return sign + frac.num;
+            return sign + "\\frac{" + frac.num + "}{" + frac.den + "}";
+        }
+
+        let piFrac = getFraction(val / Math.PI);
+        if (piFrac && piFrac.num !== 0) {
+            let numStr = piFrac.num === 1 ? "\\pi" : piFrac.num + "\\pi";
+            if (piFrac.den === 1) return sign + numStr;
+            return sign + "\\frac{" + numStr + "}{" + piFrac.den + "}";
+        }
+
+        let sqFrac = getFraction(val * val);
+        if (sqFrac && sqFrac.num !== 0) {
+            if (sqFrac.den === 1) return sign + "\\sqrt{" + sqFrac.num + "}";
+            if (sqFrac.num === 1) return sign + "\\frac{1}{\\sqrt{" + sqFrac.den + "}}";
+            return sign + "\\frac{\\sqrt{" + sqFrac.num + "}}{\\sqrt{" + sqFrac.den + "}}";
+        }
+
+        return sign + math.round(val, 4).toString();
+    }
+
+    // --- PART 1: SOLVER LOGIC ---
+    function solveDerivative() {
+        const rawInput = document.getElementById('funcInput1').value;
+        const resultDiv = document.getElementById('calcResult1');
+        if (!rawInput.trim()) {
+            resultDiv.innerHTML = "";
+            return;
+        }
+
+        const input = sanitize(rawInput);
+        let stepsHTML = `<div class="steps-wrapper"><div class="steps-container">`;
+        
+        try {
+            const node = safeParse(input);
+            stepsHTML += `
+                <div class="step-block">
+                    <div class="step-label">STEP 1: IDENTIFY FUNCTION</div>
+                    $$f(x) = ${node.toTex(texOptions)}$$
+                </div>
+            `;
+            
+            let finalDerivNode = null;
+            
+            // --- PRODUCT RULE (12) ---
+            if (node.type === 'OperatorNode' && node.op === '*') {
+                const f = node.args[0], g = node.args[1]; 
+                const fPrime = safeDerivative(f), gPrime = safeDerivative(g);
+
+                stepsHTML += `
+                    <div class="step-block">
+                        <div class="step-label">STEP 2: RULE APPLICATION <span class="rule-tag">RULE 12: PRODUCT</span></div>
+                        $$(fg)' = f'g + fg'$$
+                    </div>
+                    <div class="step-block">
+                        <div class="step-label">STEP 3: IDENTIFY COMPONENTS</div>
+                        <div class="components-box" style="font-family: monospace; font-size: 1rem;">
+                        $f = ${f.toTex(texOptions)}$, &nbsp; $g = ${g.toTex(texOptions)}$ <br>
+                        $f' = ${math.simplify(fPrime).toTex(texOptions)}$, &nbsp; $g' = ${math.simplify(gPrime).toTex(texOptions)}$
+                        </div>
+                    </div>
+                    <div class="step-block">
+                        <div class="step-label">STEP 4: SUBSTITUTION</div>
+                        $$f'(x) = \\left(${fPrime.toTex(texOptions)}\\right) \\cdot \\left(${g.toTex(texOptions)}\\right) + \\left(${f.toTex(texOptions)}\\right) \\cdot \\left(${gPrime.toTex(texOptions)}\\right)$$
+                    </div>
+                `;
+                finalDerivNode = math.parse(`(${fPrime.toString()}) * (${g.toString()}) + (${f.toString()}) * (${gPrime.toString()})`);
+            } 
+            // --- QUOTIENT (13) & INVERSE (3) RULES ---
+            else if (node.type === 'OperatorNode' && node.op === '/') {
+                let num = node.args[0];
+                let u = node.args[1];
+                
+                if (num.type === 'ParenthesisNode') num = num.content;
+
+                // Inverse Rule
+                if (num.isConstantNode) {
+                    const k = num.value;
+                    if (k == 1) {
+                        if (isX(u)) {
+                            stepsHTML += `
+                                <div class="step-block">
+                                    <div class="step-label">STEP 2: RULE APPLICATION <span class="rule-tag">RULE 3: INVERSE</span></div>
+                                    $$(\\frac{1}{x})' = -\\frac{1}{x^2}$$
+                                </div>
+                            `;
+                            finalDerivNode = math.parse(`-1 / (x^2)`);
+                        } else {
+                            const uPrime = safeDerivative(u);
+                            stepsHTML += `
+                                <div class="step-block">
+                                    <div class="step-label">STEP 2: RULE APPLICATION <span class="rule-tag">RULE 3: INVERSE (CHAIN)</span></div>
+                                    $$(\\frac{1}{u})' = -\\frac{u'}{u^2}$$
+                                </div>
+                                <div class="step-block">
+                                    <div class="step-label">STEP 3: IDENTIFY COMPONENTS</div>
+                                    <div class="components-box" style="font-family: monospace; font-size: 1rem;">
+                                    $u = ${u.toTex(texOptions)}$, $u' = ${math.simplify(uPrime).toTex(texOptions)}$
+                                    </div>
+                                </div>
+                                <div class="step-block">
+                                    <div class="step-label">STEP 4: SUBSTITUTION</div>
+                                    $$f'(x) = -\\frac{${uPrime.toTex(texOptions)}}{\\left(${u.toTex(texOptions)}\\right)^2}$$
+                                </div>
+                            `;
+                            finalDerivNode = math.parse(`-1 * (${uPrime.toString()}) / ((${u.toString()})^2)`);
+                        }
+                    } else {
+                        // Scalar Inverse Rule
+                        if (isX(u)) {
+                            stepsHTML += `
+                                <div class="step-block">
+                                    <div class="step-label">STEP 2: RULE APPLICATION <span class="rule-tag">SCALAR INVERSE</span></div>
+                                    $$(\\frac{k}{x})' = -\\frac{k}{x^2}$$
+                                </div>
+                            `;
+                            finalDerivNode = math.parse(`(-1 * ${k}) / (x^2)`);
+                        } else {
+                            const uPrime = safeDerivative(u);
+                            stepsHTML += `
+                                <div class="step-block">
+                                    <div class="step-label">STEP 2: RULE APPLICATION <span class="rule-tag">SCALAR INVERSE (CHAIN)</span></div>
+                                    $$(\\frac{k}{u})' = -\\frac{k \\cdot u'}{u^2}$$
+                                </div>
+                                <div class="step-block">
+                                    <div class="step-label">STEP 3: IDENTIFY COMPONENTS</div>
+                                    <div class="components-box" style="font-family: monospace; font-size: 1rem;">
+                                    $k = ${k}$, $u = ${u.toTex(texOptions)}$, $u' = ${math.simplify(uPrime).toTex(texOptions)}$
+                                    </div>
+                                </div>
+                                <div class="step-block">
+                                    <div class="step-label">STEP 4: SUBSTITUTION</div>
+                                    $$f'(x) = -\\frac{${k} \\cdot \\left(${uPrime.toTex(texOptions)}\\right)}{\\left(${u.toTex(texOptions)}\\right)^2}$$
+                                </div>
+                            `;
+                            finalDerivNode = math.parse(`(-1 * ${k} * (${uPrime.toString()})) / ((${u.toString()})^2)`);
+                        }
+                    }
+                } 
+                // General Quotient Rule
+                else {
+                    const f = num, g = u; 
+                    const fPrime = safeDerivative(f), gPrime = safeDerivative(g);
+                    stepsHTML += `
+                        <div class="step-block">
+                            <div class="step-label">STEP 2: RULE APPLICATION <span class="rule-tag">RULE 13: QUOTIENT</span></div>
+                            $$\\left(\\frac{f}{g}\\right)' = \\frac{f'g - fg'}{g^2}$$
+                        </div>
+                        <div class="step-block">
+                            <div class="step-label">STEP 3: IDENTIFY COMPONENTS</div>
+                            <div class="components-box" style="font-family: monospace; font-size: 1rem;">
+                            $f = ${f.toTex(texOptions)}$, &nbsp; $g = ${g.toTex(texOptions)}$ <br>
+                            $f' = ${math.simplify(fPrime).toTex(texOptions)}$, &nbsp; $g' = ${math.simplify(gPrime).toTex(texOptions)}$
+                            </div>
+                        </div>
+                        <div class="step-block">
+                            <div class="step-label">STEP 4: SUBSTITUTION</div>
+                            $$f'(x) = \\frac{\\left(${fPrime.toTex(texOptions)}\\right) \\cdot \\left(${g.toTex(texOptions)}\\right) - \\left(${f.toTex(texOptions)}\\right) \\cdot \\left(${gPrime.toTex(texOptions)}\\right)}{\\left(${g.toTex(texOptions)}\\right)^2}$$
+                        </div>
+                    `;
+                    finalDerivNode = math.parse(`((${fPrime.toString()}) * (${g.toString()}) - (${f.toString()}) * (${gPrime.toString()})) / ((${g.toString()})^2)`);
+                }
+            } 
+            // --- SQRT RULE (2) ---
+            else if (node.type === 'FunctionNode' && node.fn.name === 'sqrt') {
+                const u = node.args[0];
+                if (isX(u)) {
+                    stepsHTML += `
+                        <div class="step-block">
+                            <div class="step-label">STEP 2: RULE APPLICATION <span class="rule-tag">RULE 2: SQRT</span></div>
+                            $$(\\sqrt{x})' = \\frac{1}{2\\sqrt{x}}$$
+                        </div>
+                    `;
+                    finalDerivNode = math.parse(`1 / (2 * sqrt(x))`);
+                } else {
+                    const uPrime = safeDerivative(u);
+                    stepsHTML += `
+                        <div class="step-block">
+                            <div class="step-label">STEP 2: RULE APPLICATION <span class="rule-tag">RULE 2: SQRT (CHAIN)</span></div>
+                            $$(\\sqrt{u})' = \\frac{u'}{2\\sqrt{u}}$$
+                        </div>
+                        <div class="step-block">
+                            <div class="step-label">STEP 3: IDENTIFY COMPONENTS</div>
+                            <div class="components-box" style="font-family: monospace; font-size: 1rem;">
+                            $u = ${u.toTex(texOptions)}$, $u' = ${math.simplify(uPrime).toTex(texOptions)}$
+                            </div>
+                        </div>
+                        <div class="step-block">
+                            <div class="step-label">STEP 4: SUBSTITUTION</div>
+                            $$f'(x) = \\frac{${uPrime.toTex(texOptions)}}{2\\sqrt{${u.toTex(texOptions)}}}$$
+                        </div>
+                    `;
+                    finalDerivNode = math.parse(`(${uPrime.toString()}) / (2 * sqrt(${u.toString()}))`);
+                }
+            } 
+            // --- SINE RULE (4) ---
+            else if (node.type === 'FunctionNode' && node.fn.name === 'sin') {
+                const u = node.args[0];
+                if (isX(u)) {
+                    stepsHTML += `
+                        <div class="step-block">
+                            <div class="step-label">STEP 2: RULE APPLICATION <span class="rule-tag">RULE 4: SINE</span></div>
+                            $$(\\sin x)' = \\cos x$$
+                        </div>
+                    `;
+                    finalDerivNode = math.parse(`cos(x)`);
+                } else {
+                    const uPrime = safeDerivative(u);
+                    stepsHTML += `
+                        <div class="step-block">
+                            <div class="step-label">STEP 2: RULE APPLICATION <span class="rule-tag">RULE 4: SINE (CHAIN)</span></div>
+                            $$(\\sin u)' = u' \\cdot \\cos u$$
+                        </div>
+                        <div class="step-block">
+                            <div class="step-label">STEP 3: IDENTIFY COMPONENTS</div>
+                            <div class="components-box" style="font-family: monospace; font-size: 1rem;">
+                            $u = ${u.toTex(texOptions)}$, $u' = ${math.simplify(uPrime).toTex(texOptions)}$
+                            </div>
+                        </div>
+                        <div class="step-block">
+                            <div class="step-label">STEP 4: SUBSTITUTION</div>
+                            $$f'(x) = \\left(${uPrime.toTex(texOptions)}\\right) \\cdot \\cos\\left(${u.toTex(texOptions)}\\right)$$
+                        </div>
+                    `;
+                    finalDerivNode = math.parse(`(${uPrime.toString()}) * cos(${u.toString()})`);
+                }
+            }
+            // --- COSINE RULE (5) ---
+            else if (node.type === 'FunctionNode' && node.fn.name === 'cos') {
+                const u = node.args[0];
+                if (isX(u)) {
+                    stepsHTML += `
+                        <div class="step-block">
+                            <div class="step-label">STEP 2: RULE APPLICATION <span class="rule-tag">RULE 5: COSINE</span></div>
+                            $$(\\cos x)' = -\\sin x$$
+                        </div>
+                    `;
+                    finalDerivNode = math.parse(`-sin(x)`);
+                } else {
+                    const uPrime = safeDerivative(u);
+                    stepsHTML += `
+                        <div class="step-block">
+                            <div class="step-label">STEP 2: RULE APPLICATION <span class="rule-tag">RULE 5: COSINE (CHAIN)</span></div>
+                            $$(\\cos u)' = -u' \\cdot \\sin u$$
+                        </div>
+                        <div class="step-block">
+                            <div class="step-label">STEP 3: IDENTIFY COMPONENTS</div>
+                            <div class="components-box" style="font-family: monospace; font-size: 1rem;">
+                            $u = ${u.toTex(texOptions)}$, $u' = ${math.simplify(uPrime).toTex(texOptions)}$
+                            </div>
+                        </div>
+                        <div class="step-block">
+                            <div class="step-label">STEP 4: SUBSTITUTION</div>
+                            $$f'(x) = -\\left(${uPrime.toTex(texOptions)}\\right) \\cdot \\sin\\left(${u.toTex(texOptions)}\\right)$$
+                        </div>
+                    `;
+                    finalDerivNode = math.parse(`-(${uPrime.toString()}) * sin(${u.toString()})`);
+                }
+            }
+            // --- TANGENT RULE (6) ---
+            else if (node.type === 'FunctionNode' && node.fn.name === 'tan') {
+                const u = node.args[0];
+                if (isX(u)) {
+                    stepsHTML += `
+                        <div class="step-block">
+                            <div class="step-label">STEP 2: RULE APPLICATION <span class="rule-tag">RULE 6: TANGENT</span></div>
+                            $$(\\tan x)' = \\frac{1}{\\cos^2 x}$$
+                        </div>
+                    `;
+                    finalDerivNode = math.parse(`1 / ((cos(x))^2)`);
+                } else {
+                    const uPrime = safeDerivative(u);
+                    stepsHTML += `
+                        <div class="step-block">
+                            <div class="step-label">STEP 2: RULE APPLICATION <span class="rule-tag">RULE 6: TANGENT (CHAIN)</span></div>
+                            $$(\\tan u)' = \\frac{u'}{\\cos^2 u}$$
+                        </div>
+                        <div class="step-block">
+                            <div class="step-label">STEP 3: IDENTIFY COMPONENTS</div>
+                            <div class="components-box" style="font-family: monospace; font-size: 1rem;">
+                            $u = ${u.toTex(texOptions)}$, $u' = ${math.simplify(uPrime).toTex(texOptions)}$
+                            </div>
+                        </div>
+                        <div class="step-block">
+                            <div class="step-label">STEP 4: SUBSTITUTION</div>
+                            $$f'(x) = \\frac{${uPrime.toTex(texOptions)}}{\\cos^2\\left(${u.toTex(texOptions)}\\right)}$$
+                        </div>
+                    `;
+                    finalDerivNode = math.parse(`(${uPrime.toString()}) / ((cos(${u.toString()}))^2)`);
+                }
+            }
+            // --- COTANGENT RULE (7) ---
+            else if (node.type === 'FunctionNode' && node.fn.name === 'cot') {
+                const u = node.args[0];
+                if (isX(u)) {
+                    stepsHTML += `
+                        <div class="step-block">
+                            <div class="step-label">STEP 2: RULE APPLICATION <span class="rule-tag">RULE 7: COTANGENT</span></div>
+                            $$(\\cot x)' = -\\frac{1}{\\sin^2 x}$$
+                        </div>
+                    `;
+                    finalDerivNode = math.parse(`-1 / ((sin(x))^2)`);
+                } else {
+                    const uPrime = safeDerivative(u);
+                    stepsHTML += `
+                        <div class="step-block">
+                            <div class="step-label">STEP 2: RULE APPLICATION <span class="rule-tag">RULE 7: COTANGENT (CHAIN)</span></div>
+                            $$(\\cot u)' = -\\frac{u'}{\\sin^2 u}$$
+                        </div>
+                        <div class="step-block">
+                            <div class="step-label">STEP 3: IDENTIFY COMPONENTS</div>
+                            <div class="components-box" style="font-family: monospace; font-size: 1rem;">
+                            $u = ${u.toTex(texOptions)}$, $u' = ${math.simplify(uPrime).toTex(texOptions)}$
+                            </div>
+                        </div>
+                        <div class="step-block">
+                            <div class="step-label">STEP 4: SUBSTITUTION</div>
+                            $$f'(x) = -\\frac{${uPrime.toTex(texOptions)}}{\\sin^2\\left(${u.toTex(texOptions)}\\right)}$$
+                        </div>
+                    `;
+                    finalDerivNode = math.parse(`-(${uPrime.toString()}) / ((sin(${u.toString()}))^2)`);
+                }
+            }
+            // --- EXPONENTIAL e^x RULE (8) ---
+            else if (node.type === 'FunctionNode' && node.fn.name === 'exp') {
+                const u = node.args[0];
+                if (isX(u)) {
+                    stepsHTML += `
+                        <div class="step-block">
+                            <div class="step-label">STEP 2: RULE APPLICATION <span class="rule-tag">RULE 8: EXP (e)</span></div>
+                            $$(e^x)' = e^x$$
+                        </div>
+                    `;
+                    finalDerivNode = math.parse(`exp(x)`);
+                } else {
+                    const uPrime = safeDerivative(u);
+                    stepsHTML += `
+                        <div class="step-block">
+                            <div class="step-label">STEP 2: RULE APPLICATION <span class="rule-tag">RULE 8: EXP (e) (CHAIN)</span></div>
+                            $$(e^u)' = u' \\cdot e^u$$
+                        </div>
+                        <div class="step-block">
+                            <div class="step-label">STEP 3: IDENTIFY COMPONENTS</div>
+                            <div class="components-box" style="font-family: monospace; font-size: 1rem;">
+                            $u = ${u.toTex(texOptions)}$, $u' = ${math.simplify(uPrime).toTex(texOptions)}$
+                            </div>
+                        </div>
+                        <div class="step-block">
+                            <div class="step-label">STEP 4: SUBSTITUTION</div>
+                            $$f'(x) = \\left(${uPrime.toTex(texOptions)}\\right) \\cdot e^{${u.toTex(texOptions)}}$$
+                        </div>
+                    `;
+                    finalDerivNode = math.parse(`(${uPrime.toString()}) * exp(${u.toString()})`);
+                }
+            }
+            // --- LN / LOG RULE (10 & 11) ---
+            else if (node.type === 'FunctionNode' && (node.fn.name === 'log' || node.fn.name === 'logBase')) {
+                const u = node.args[0];
+                
+                // Natural Logarithm (Rule 10)
+                if (node.fn.name === 'log' && node.args.length === 1) {
+                    if (isX(u)) {
+                        stepsHTML += `
+                            <div class="step-block">
+                                <div class="step-label">STEP 2: RULE APPLICATION <span class="rule-tag">RULE 10: LN</span></div>
+                                $$(\\ln x)' = \\frac{1}{x}$$
+                            </div>
+                        `;
+                        finalDerivNode = math.parse(`1 / x`);
+                    } else {
+                        const uPrime = safeDerivative(u);
+                        stepsHTML += `
+                            <div class="step-block">
+                                <div class="step-label">STEP 2: RULE APPLICATION <span class="rule-tag">RULE 10: LN (CHAIN)</span></div>
+                                $$(\\ln u)' = \\frac{1}{u} \\cdot u'$$
+                            </div>
+                            <div class="step-block">
+                                <div class="step-label">STEP 3: IDENTIFY COMPONENTS</div>
+                                <div class="components-box" style="font-family: monospace; font-size: 1rem;">
+                                $u = ${u.toTex(texOptions)}$, $u' = ${math.simplify(uPrime).toTex(texOptions)}$
+                                </div>
+                            </div>
+                            <div class="step-block">
+                                <div class="step-label">STEP 4: SUBSTITUTION</div>
+                                $$f'(x) = \\frac{1}{${u.toTex(texOptions)}} \\cdot \\left(${uPrime.toTex(texOptions)}\\right)$$
+                            </div>
+                        `;
+                        finalDerivNode = math.parse(`(1 / (${u.toString()})) * (${uPrime.toString()})`);
+                    }
+                } 
+                // Log Base a (Rule 11)
+                else if (node.fn.name === 'logBase' && node.args.length === 2) {
+                    const a = node.args[1];
+                    if (isX(u)) {
+                        stepsHTML += `
+                            <div class="step-block">
+                                <div class="step-label">STEP 2: RULE APPLICATION <span class="rule-tag">RULE 11: LOG (a)</span></div>
+                                $$(\\log_a x)' = \\frac{1}{x \\ln a}$$
+                            </div>
+                        `;
+                        finalDerivNode = math.parse(`1 / (x * log(${a.toString()}))`);
+                    } else {
+                        const uPrime = safeDerivative(u);
+                        stepsHTML += `
+                            <div class="step-block">
+                                <div class="step-label">STEP 2: RULE APPLICATION <span class="rule-tag">RULE 11: LOG (a) (CHAIN)</span></div>
+                                $$(\\log_a u)' = \\frac{1}{u \\ln a} \\cdot u'$$
+                            </div>
+                            <div class="step-block">
+                                <div class="step-label">STEP 3: IDENTIFY COMPONENTS</div>
+                                <div class="components-box" style="font-family: monospace; font-size: 1rem;">
+                                $u = ${u.toTex(texOptions)}$, $a = ${a.toTex(texOptions)}$, $u' = ${math.simplify(uPrime).toTex(texOptions)}$
+                                </div>
+                            </div>
+                            <div class="step-block">
+                                <div class="step-label">STEP 4: SUBSTITUTION</div>
+                                $$f'(x) = \\frac{1}{\\left(${u.toTex(texOptions)}\\right) \\ln\\left(${a.toTex(texOptions)}\\right)} \\cdot \\left(${uPrime.toTex(texOptions)}\\right)$$
+                            </div>
+                        `;
+                        finalDerivNode = math.parse(`(1 / ((${u.toString()}) * log(${a.toString()}))) * (${uPrime.toString()})`);
+                    }
+                }
+            }
+            // --- EXPONENTIATION (^): Power (1), Exp_a (9), vs Function Exponent (14) ---
+            else if (node.type === 'OperatorNode' && node.op === '^') {
+                const u = node.args[0], v = node.args[1]; 
+                
+                // POWER RULE (v is a constant)
+                if (v.isConstantNode && !u.isConstantNode) {
+                    if (isX(u)) {
+                        stepsHTML += `
+                            <div class="step-block">
+                                <div class="step-label">STEP 2: RULE APPLICATION <span class="rule-tag">RULE 1: POWER</span></div>
+                                $$(x^\\alpha)' = \\alpha x^{\\alpha-1}$$
+                            </div>
+                        `;
+                        finalDerivNode = safeDerivative(node); 
+                    } else {
+                        const uPrime = safeDerivative(u);
+                        stepsHTML += `
+                            <div class="step-block">
+                                <div class="step-label">STEP 2: RULE APPLICATION <span class="rule-tag">RULE 1: POWER (CHAIN)</span></div>
+                                $$(u^\\alpha)' = \\alpha u^{\\alpha-1} \\cdot u'$$
+                            </div>
+                            <div class="step-block">
+                                <div class="step-label">STEP 3: IDENTIFY COMPONENTS</div>
+                                <div class="components-box" style="font-family: monospace; font-size: 1rem;">
+                                $u = ${u.toTex(texOptions)}$, $\\alpha = ${v.toTex(texOptions)}$ <br>
+                                $u' = ${math.simplify(uPrime).toTex(texOptions)}$
+                                </div>
+                            </div>
+                            <div class="step-block">
+                                <div class="step-label">STEP 4: SUBSTITUTION</div>
+                                $$f'(x) = \\left(${v.toTex(texOptions)}\\right) \\cdot \\left(${u.toTex(texOptions)}\\right)^{\\left(${v.toTex(texOptions)}\\right)-1} \\cdot \\left(${uPrime.toTex(texOptions)}\\right)$$
+                            </div>
+                        `;
+                        finalDerivNode = math.parse(`(${v.toString()}) * ((${u.toString()})^(${v.toString()} - 1)) * (${uPrime.toString()})`);
+                    }
+                }
+                // EXPONENT BASE a RULE (u is a constant)
+                else if (u.isConstantNode && !v.isConstantNode) {
+                    const a = u;
+                    if (isX(v)) {
+                        stepsHTML += `
+                            <div class="step-block">
+                                <div class="step-label">STEP 2: RULE APPLICATION <span class="rule-tag">RULE 9: EXP (a)</span></div>
+                                $$(a^x)' = a^x \\ln a$$
+                            </div>
+                        `;
+                        finalDerivNode = math.parse(`(${a.toString()}^x) * log(${a.toString()})`);
+                    } else {
+                        const vPrime = safeDerivative(v);
+                        stepsHTML += `
+                            <div class="step-block">
+                                <div class="step-label">STEP 2: RULE APPLICATION <span class="rule-tag">RULE 9: EXP (a) (CHAIN)</span></div>
+                                $$(a^u)' = u' \\cdot a^u \\ln a$$
+                            </div>
+                            <div class="step-block">
+                                <div class="step-label">STEP 3: IDENTIFY COMPONENTS</div>
+                                <div class="components-box" style="font-family: monospace; font-size: 1rem;">
+                                $a = ${a.toTex(texOptions)}$, $u = ${v.toTex(texOptions)}$, $u' = ${math.simplify(vPrime).toTex(texOptions)}$
+                                </div>
+                            </div>
+                            <div class="step-block">
+                                <div class="step-label">STEP 4: SUBSTITUTION</div>
+                                $$f'(x) = \\left(${vPrime.toTex(texOptions)}\\right) \\cdot \\left(${a.toTex(texOptions)}\\right)^{${v.toTex(texOptions)}} \\cdot \\ln(${a.toTex(texOptions)})$$
+                            </div>
+                        `;
+                        finalDerivNode = math.parse(`(${vPrime.toString()}) * (${a.toString()}^(${v.toString()})) * log(${a.toString()})`);
+                    }
+                }
+                // FUNCTION EXPONENT RULE (u^v)
+                else {
+                    const uPrime = safeDerivative(u), vPrime = safeDerivative(v);
+                    stepsHTML += `
+                        <div class="step-block">
+                            <div class="step-label">STEP 2: RULE APPLICATION <span class="rule-tag">RULE 14: LOGARITHMIC DIFF</span></div>
+                            $$(u^v)' = u^v \\left[ v' \\ln(u) + v \\frac{u'}{u} \\right]$$
+                        </div>
+                        <div class="step-block">
+                            <div class="step-label">STEP 3: IDENTIFY COMPONENTS</div>
+                            <div class="components-box" style="font-family: monospace; font-size: 1rem;">
+                            $u = ${u.toTex(texOptions)}$, &nbsp; $v = ${v.toTex(texOptions)}$ <br>
+                            $u' = ${math.simplify(uPrime).toTex(texOptions)}$, &nbsp; $v' = ${math.simplify(vPrime).toTex(texOptions)}$
+                            </div>
+                        </div>
+                        <div class="step-block">
+                            <div class="step-label">STEP 4: SUBSTITUTION</div>
+                            $$f'(x) = \\left(${u.toTex(texOptions)}\\right)^{\\left(${v.toTex(texOptions)}\\right)} \\left[ \\left(${vPrime.toTex(texOptions)}\\right) \\ln\\left(${u.toTex(texOptions)}\\right) + \\left(${v.toTex(texOptions)}\\right) \\frac{${uPrime.toTex(texOptions)}}{${u.toTex(texOptions)}} \\right]$$
+                        </div>
+                    `;
+                }
+            }
+            // --- FALLBACK ---
+            else {
+                 stepsHTML += `
+                    <div class="step-block">
+                        <div class="step-label">STEP 2: BASIC RULE</div>
+                        Apply standard derivative rules.
+                    </div>
+                 `;
+            }
+
+            const simplified = finalDerivNode ? math.simplify(finalDerivNode) : math.simplify(safeDerivative(node));
+            stepsHTML += `
+                <div class="step-block" style="border-bottom: none;">
+                    <div class="final-answer-box">
+                        <div class="step-label" style="margin-bottom: 5px;">FINAL SIMPLIFIED ANSWER</div>
+                        $$f'(x) = ${simplified.toTex(texOptions)}$$
+                    </div>
+                </div>
+            `;
+            
+        } catch (e) {
+            stepsHTML += `
+                <div class="error-box">
+                    Syntax Error: Please check your formula.
+                    <span class="error-details">Details: ${e.message}</span>
+                </div>
+            `;
+        }
+        
+        stepsHTML += `</div></div>`;
+        resultDiv.innerHTML = stepsHTML;
+        MathJax.typesetPromise([resultDiv]);
+    }
+
+    // --- PART 2: APPLICATIONS LOGIC ---
+    function getAppFuncNode() {
+        return safeParse(sanitize(document.getElementById('appFunc').value));
+    }
+
+    // Tool 1: Instantaneous
+    function calcInstantaneous() {
+        const resultDiv = document.getElementById('instResult');
+        try {
+            const node = getAppFuncNode();
+            const xValStr = sanitize(document.getElementById('instX').value);
+            const xVal = math.evaluate(xValStr);
+            
+            const d1 = safeDerivative(node);
+            const val = safeEvaluate(d1, {x: xVal});
+            
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `
+                <div class="components-box" style="margin-top:10px; display:inline-block;">
+                    $f'(x) = ${d1.toTex(texOptions)}$ <br>
+                    $f'(${recognizeExact(xVal)}) = ${recognizeExact(val)}$
+                </div>
+            `;
+            MathJax.typesetPromise([resultDiv]);
+        } catch(e) {
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `<span style="color:red; font-weight:bold;">Error: Check syntax in Master Function or X field.</span>`;
+        }
+    }
+
+    // Tool 1: Average
+    function calcAverage() {
+        const resultDiv = document.getElementById('avgResult');
+        try {
+            const node = getAppFuncNode();
+            const x1Str = sanitize(document.getElementById('avgX1').value);
+            const x2Str = sanitize(document.getElementById('avgX2').value);
+            
+            const x1 = math.evaluate(x1Str);
+            const x2 = math.evaluate(x2Str);
+            
+            if (Math.abs(x1 - x2) < 1e-10) throw new Error("x1 and x2 cannot be the same.");
+            
+            const y1 = safeEvaluate(node, {x: x1});
+            const y2 = safeEvaluate(node, {x: x2});
+            const m = (y2 - y1) / (x2 - x1);
+            
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `
+                <div class="components-box" style="margin-top:10px; display:inline-block;">
+                    $f(${recognizeExact(x1)}) = ${recognizeExact(y1)}$, &nbsp; $f(${recognizeExact(x2)}) = ${recognizeExact(y2)}$ <br><br>
+                    $m = \\frac{${recognizeExact(y2)} - (${recognizeExact(y1)})}{${recognizeExact(x2)} - (${recognizeExact(x1)})} = ${recognizeExact(m)}$
+                </div>
+            `;
+            MathJax.typesetPromise([resultDiv]);
+        } catch(e) {
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `<span style="color:red; font-weight:bold;">Error: ${e.message}</span>`;
+        }
+    }
+
+    // Tool 2: Automatic Finding & Nature
+    function findAndAnalyzeStationaryPoints() {
+        const resultDiv = document.getElementById('statPointsResult');
+        try {
+            const node = getAppFuncNode();
+            const d1 = safeDerivative(node);
+            const d2 = safeDerivative(d1);
+            
+            let stationaryPoints = [];
+            let step = 0.05;
+            
+            function addRoot(r) {
+                if (Math.abs(r) < 1e-7) r = 0;
+                if (Math.abs(safeEvaluate(d1, {x: r})) > 1e-3) return; 
+                
+                if (!stationaryPoints.some(existing => Math.abs(existing - r) < 1e-4)) {
+                    stationaryPoints.push(r);
+                }
+            }
+
+            for(let x = -15; x <= 15; x += step) {
+                let a = x, b = x + step;
+                
+                let yA = safeEvaluate(d1, {x: a});
+                let yB = safeEvaluate(d1, {x: b});
+                
+                if (Math.abs(yA) < 1e-9) addRoot(a);
+                else if (Math.abs(yB) < 1e-9) addRoot(b);
+                else if (yA * yB < 0) {
+                    let root = a;
+                    let currA = a, currB = b, currYA = yA;
+                    for(let i=0; i<40; i++) {
+                        let mid = (currA+currB)/2;
+                        let yMid = safeEvaluate(d1, {x: mid});
+                        if (Math.abs(yMid) < 1e-10) { root = mid; break; }
+                        if (currYA * yMid < 0) { currB = mid; } 
+                        else { currA = mid; currYA = yMid; }
+                        root = mid;
+                    }
+                    addRoot(root);
+                }
+                
+                let yA2 = safeEvaluate(d2, {x: a});
+                let yB2 = safeEvaluate(d2, {x: b});
+                
+                if (Math.abs(yA2) < 1e-9) { addRoot(a); }
+                else if (Math.abs(yB2) < 1e-9) { addRoot(b); }
+                else if (yA2 * yB2 < 0) {
+                    let root_d2 = a;
+                    let currA = a, currB = b, currYA2 = yA2;
+                    for(let i=0; i<40; i++) {
+                        let mid = (currA+currB)/2;
+                        let yMid = safeEvaluate(d2, {x: mid});
+                        if (Math.abs(yMid) < 1e-10) { root_d2 = mid; break; }
+                        if (currYA2 * yMid < 0) { currB = mid; } 
+                        else { currA = mid; currYA2 = yMid; }
+                        root_d2 = mid;
+                    }
+                    addRoot(root_d2);
+                }
+            }
+
+            stationaryPoints.sort((a, b) => a - b);
+
+            let html = `
+                <div class="analysis-result">
+                    <h3 class="analysis-subtitle">Step 1 & 2: Calculate Derivatives & Find Roots</h3>
+                    <div class="components-box" style="margin-bottom: 20px; display:inline-block;">
+                        $f'(x) = ${d1.toTex(texOptions)}$ <br>
+                        $f''(x) = ${d2.toTex(texOptions)}$
+                    </div>
+            `;
+                    
+            html += `<h3 class="analysis-subtitle">Step 3: Determine Nature of Stationary Points</h3>`;
+            if (stationaryPoints.length === 0) {
+                html += `<p>No stationary points found within the scanned domain.</p>`;
+            } else {
+                html += `<div class="steps-wrapper" style="padding:0; box-shadow:none; background:transparent;">`;
+                
+                stationaryPoints.forEach((pt, idx) => {
+                    let yVal = safeEvaluate(node, { x: pt });
+                    let d2ValRaw = safeEvaluate(d2, { x: pt });
+                    
+                    let xStr = recognizeExact(pt);
+                    let yStr = recognizeExact(yVal);
+                    let d2Str = recognizeExact(d2ValRaw);
+                    
+                    let nature = "";
+                    let breakdown = "";
+                    
+                    // Second Derivative Test
+                    if (d2ValRaw > 1e-5) {
+                        nature = "Local Minimum";
+                        breakdown = `
+                            <strong>Rule Applied:</strong> Second Derivative Test <br>
+                            <strong>Breakdown:</strong> Substitute $x = ${xStr}$ into the second derivative $f''(x)$. <br>
+                            $f''(${xStr}) = ${d2Str}$ <br>
+                            <strong>Show & Tell:</strong> Since $f''(${xStr}) > 0$, the curve is <em>concave up</em> (shaped like a valley or a smile) at this point. Therefore, the coordinate is a <strong style="color:#27ae60;">${nature}</strong>.
+                        `;
+                    } else if (d2ValRaw < -1e-5) {
+                        nature = "Local Maximum";
+                        breakdown = `
+                            <strong>Rule Applied:</strong> Second Derivative Test <br>
+                            <strong>Breakdown:</strong> Substitute $x = ${xStr}$ into the second derivative $f''(x)$. <br>
+                            $f''(${xStr}) = ${d2Str}$ <br>
+                            <strong>Show & Tell:</strong> Since $f''(${xStr}) < 0$, the curve is <em>concave down</em> (shaped like a peak or a frown) at this point. Therefore, the coordinate is a <strong style="color:#c0392b;">${nature}</strong>.
+                        `;
+                    } else {
+                        // First Derivative Test Fallback
+                        let stepAmt = 1e-3;
+                        let leftDeriv = safeEvaluate(d1, { x: pt - stepAmt });
+                        let rightDeriv = safeEvaluate(d1, { x: pt + stepAmt });
+                        
+                        if (leftDeriv < -1e-9 && rightDeriv > 1e-9) {
+                            nature = "Local Minimum";
+                            breakdown = `
+                                <strong>Rule Applied:</strong> First Derivative Test (Second Derivative was $0$) <br>
+                                <strong>Breakdown:</strong> We test the slope $f'(x)$ just before and just after $x = ${xStr}$. <br>
+                                Left of point: $f'(x)$ is negative (decreasing). <br>
+                                Right of point: $f'(x)$ is positive (increasing). <br>
+                                <strong>Show & Tell:</strong> The curve goes down, bottoms out, and comes back up. Therefore, it is a <strong style="color:#27ae60;">${nature}</strong>.
+                            `;
+                        } else if (leftDeriv > 1e-9 && rightDeriv < -1e-9) {
+                            nature = "Local Maximum";
+                            breakdown = `
+                                <strong>Rule Applied:</strong> First Derivative Test (Second Derivative was $0$) <br>
+                                <strong>Breakdown:</strong> We test the slope $f'(x)$ just before and just after $x = ${xStr}$. <br>
+                                Left of point: $f'(x)$ is positive (increasing). <br>
+                                Right of point: $f'(x)$ is negative (decreasing). <br>
+                                <strong>Show & Tell:</strong> The curve goes up, peaks, and comes back down. Therefore, it is a <strong style="color:#c0392b;">${nature}</strong>.
+                            `;
+                        } else {
+                            nature = "Point of Inflection";
+                            breakdown = `
+                                <strong>Rule Applied:</strong> First Derivative Test (Second Derivative was $0$) <br>
+                                <strong>Breakdown:</strong> We test the slope $f'(x)$ just before and just after $x = ${xStr}$. The slope does <em>not</em> change sign. <br>
+                                <strong>Show & Tell:</strong> The curve flattens out but continues in the same vertical direction (like a shelf). Therefore, it is a <strong style="color:#d35400;">${nature}</strong>.
+                            `;
+                        }
+                    }
+                    
+                    html += `
+                        <div class="conclusion-box" style="margin-bottom: 15px; padding: 15px; border-left: 5px solid #2980b9; background-color: #f1f8ff; border-radius: 4px;">
+                            <strong style="font-size: 1.1em; color: #2c3e50;">Point ${idx+1}:</strong> Coordinate $(x = ${xStr}, y = ${yStr})$ <br><br>
+                            <div style="color: #34495e; line-height: 1.6;">
+                                ${breakdown}
+                            </div>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            }
+            
+            html += `</div>`;
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = html;
+            MathJax.typesetPromise([resultDiv]);
+            
+        } catch (e) {
+            resultDiv.style.display = "block";
+            resultDiv.innerHTML = `
+                <div class="steps-wrapper" style="margin-top: 20px;">
+                    <div class="error-box" style="margin: 0;">
+                        Syntax Error in Master Function.
+                        <span class="error-details">Details: ${e.message}</span>
+                    </div>
+                </div>`;
+        }
+    }
+
+    // ==========================================
+    // 4. INTEGRATION LOGIC
+    // ==========================================
+    
+    function unwrap(node) {
+        let n = node;
+        while (n && n.isParenthesisNode) {
+            n = n.content;
+        }
+        return n;
+    }
+
+    function getConstantValue(node) {
+        try {
+            let hasX = false;
+            node.traverse(function(n) {
+                if (n.isSymbolNode && !['pi', 'e', 'phi'].includes(n.name)) hasX = true;
+            });
+            if (hasX) return null;
+            
+            const val = node.evaluate();
+            if (typeof val === 'number' && !isNaN(val)) return val;
+        } catch(e) {}
+        return null;
+    }
+
+    function integrateNode(nodeStr, x = 'x') {
+        let node = math.parse(nodeStr);
+        node = unwrap(node);
+        
+        let nodeHasX = false;
+        node.traverse(function(n) { if (n.isSymbolNode && n.name === x) nodeHasX = true; });
+        
+        if (!nodeHasX) {
+            if (node.toString() === '0') return math.parse('0');
+            return math.parse(`(${node.toString()}) * ${x}`);
+        }
+        
+        if (node.isSymbolNode) {
+            if (node.name === x) {
+                return math.parse(`(${x}^2) / 2`);
+            }
+            return math.parse(`(${node.name}) * ${x}`);
+        }
+        if (node.isOperatorNode) {
+            if (node.op === '+' || node.op === '-') {
+                if (node.args.length === 2) {
+                    const leftInt = integrateNode(node.args[0].toString(), x);
+                    const rightInt = integrateNode(node.args[1].toString(), x);
+                    return math.parse(`(${leftInt.toString()}) ${node.op} (${rightInt.toString()})`);
+                }
+            }
+            if (node.op === '*') {
+                let left = unwrap(node.args[0]);
+                let right = unwrap(node.args[1]);
+                
+                let leftHasX = false;
+                left.traverse(function(n) { if (n.isSymbolNode && n.name === x) leftHasX = true; });
+                let rightHasX = false;
+                right.traverse(function(n) { if (n.isSymbolNode && n.name === x) rightHasX = true; });
+                
+                if (!leftHasX) {
+                    return math.parse(`(${left.toString()}) * (${integrateNode(right.toString(), x).toString()})`);
+                }
+                if (!rightHasX) {
+                    return math.parse(`(${right.toString()}) * (${integrateNode(left.toString(), x).toString()})`);
+                }
+                throw new Error("Product rule for multiple x-variables requires Integration by Parts.");
+            }
+            if (node.op === '/') {
+                let left = unwrap(node.args[0]);
+                let right = unwrap(node.args[1]);
+                
+                let leftHasX = false;
+                left.traverse(function(n) { if (n.isSymbolNode && n.name === x) leftHasX = true; });
+                let rightHasX = false;
+                right.traverse(function(n) { if (n.isSymbolNode && n.name === x) rightHasX = true; });
+                
+                if (!rightHasX) {
+                     return math.parse(`(${integrateNode(left.toString(), x).toString()}) / (${right.toString()})`);
+                }
+                
+                if (!leftHasX) {
+                    if (right.isOperatorNode && right.op === '-' && right.fn === 'unaryMinus') {
+                        return integrateNode(`(-(${left.toString()})) / (${unwrap(right.args[0]).toString()})`, x);
+                    }
+                    if (right.isOperatorNode && right.op === '*') {
+                        let rLeft = unwrap(right.args[0]);
+                        let rRight = unwrap(right.args[1]);
+                        let rLeftHasX = false; rLeft.traverse(n => { if (n.isSymbolNode && n.name === x) rLeftHasX = true; });
+                        let rRightHasX = false; rRight.traverse(n => { if (n.isSymbolNode && n.name === x) rRightHasX = true; });
+                        
+                        if (!rLeftHasX && rRightHasX) {
+                            return integrateNode(`(${left.toString()} / ${rLeft.toString()}) / (${rRight.toString()})`, x);
+                        }
+                        if (rLeftHasX && !rRightHasX) {
+                            return integrateNode(`(${left.toString()} / ${rRight.toString()}) / (${rLeft.toString()})`, x);
+                        }
+                    }
+
+                    if (right.isSymbolNode && right.name === x) {
+                         return math.parse(`(${left.toString()}) * log(abs(${x}))`); 
+                    }
+                    if (right.isOperatorNode && right.op === '^') {
+                        let rBase = unwrap(right.args[0]);
+                        let rExp = unwrap(right.args[1]);
+                        const C = left.toString();
+                        
+                        let rBaseHasX = false;
+                        rBase.traverse(function(n) { if (n.isSymbolNode && n.name === x) rBaseHasX = true; });
+                        
+                        if (rBaseHasX) {
+                            let isTwo = false;
+                            try { if (math.evaluate(rExp.toString()) === 2) isTwo = true; } catch(e) {}
+                            
+                            if (isTwo && rBase.isFunctionNode && rBase.fn.name === 'cos') {
+                                const innerUPrime = math.derivative(rBase.args[0], x);
+                                return math.parse(`(${C}) * tan(${rBase.args[0].toString()}) / (${innerUPrime.toString()})`);
+                            }
+                            if (isTwo && rBase.isFunctionNode && rBase.fn.name === 'sin') {
+                                const innerUPrime = math.derivative(rBase.args[0], x);
+                                return math.parse(`-1 * (${C}) * cot(${rBase.args[0].toString()}) / (${innerUPrime.toString()})`);
+                            }
+                            
+                            return integrateNode(`(${C}) * (${rBase.toString()})^(-(${rExp.toString()}))`, x);
+                        } else {
+                            return integrateNode(`(${C}) * (${rBase.toString()})^(-(${rExp.toString()}))`, x);
+                        }
+                    }
+                    if (right.isFunctionNode && right.fn.name === 'exp') {
+                        return integrateNode(`(${left.toString()}) * exp(-(${right.args[0].toString()}))`, x);
+                    }
+                    
+                    if (right.isFunctionNode && right.fn.name === 'tan') {
+                        const innerUPrime = math.derivative(right.args[0], x);
+                        return math.parse(`(${left.toString()}) * log(abs(sin(${right.args[0].toString()}))) / (${innerUPrime.toString()})`);
+                    }
+                    if (right.isFunctionNode && right.fn.name === 'cot') {
+                        const innerUPrime = math.derivative(right.args[0], x);
+                        return math.parse(`-1 * (${left.toString()}) * log(abs(cos(${right.args[0].toString()}))) / (${innerUPrime.toString()})`);
+                    }
+
+                    const uPrimeNode = math.derivative(right, x);
+                    return math.parse(`(${left.toString()}) * log(abs(${right.toString()})) / (${uPrimeNode.toString()})`);
+                }
+                throw new Error("Complex quotient rule integration not fully supported.");
+            }
+            if (node.op === '^') {
+                const base = unwrap(node.args[0]);
+                const exp = unwrap(node.args[1]);
+                
+                let baseHasX = false;
+                base.traverse(function(n) { if (n.isSymbolNode && n.name === x) baseHasX = true; });
+                let expHasX = false;
+                exp.traverse(function(n) { if (n.isSymbolNode && n.name === x) expHasX = true; });
+                
+                let baseIsE = base.toString() === 'e' || (base.isSymbolNode && base.name === 'e');
+                
+                if (baseHasX && expHasX) {
+                    throw new Error("This is OUTSIDE THE RANGE OF YOUR SYLLABUS, go back before you lost your ways, young one! 👽");
+                }
+                if (baseHasX && !expHasX) {
+                    const uPrimeNode = math.derivative(base, x);
+                    let isNegativeOne = false;
+                    let isNegativeTwo = false;
+                    let isTwo = false;
+                    try { 
+                        let evalVal = math.evaluate(exp.toString());
+                        if (evalVal === -1) isNegativeOne = true;
+                        if (evalVal === -2) isNegativeTwo = true;
+                        if (evalVal === 2) isTwo = true;
+                    } catch(e) {}
+                    
+                    if (isNegativeOne) {
+                        if (base.isFunctionNode && base.fn.name === 'tan') {
+                            const innerUPrime = math.derivative(base.args[0], x);
+                            return math.parse(`log(abs(sin(${base.args[0].toString()}))) / (${innerUPrime.toString()})`);
+                        }
+                        if (base.isFunctionNode && base.fn.name === 'cot') {
+                            const innerUPrime = math.derivative(base.args[0], x);
+                            return math.parse(`-1 * log(abs(cos(${base.args[0].toString()}))) / (${innerUPrime.toString()})`);
+                        }
+                        return math.parse(`log(abs(${base.toString()})) / (${uPrimeNode.toString()})`);
+                    }
+                    
+                    if (isNegativeTwo && base.isFunctionNode && base.fn.name === 'cos') {
+                        const innerUPrime = math.derivative(base.args[0], x);
+                        return math.parse(`tan(${base.args[0].toString()}) / (${innerUPrime.toString()})`);
+                    }
+                    if (isNegativeTwo && base.isFunctionNode && base.fn.name === 'sin') {
+                        const innerUPrime = math.derivative(base.args[0], x);
+                        return math.parse(`-1 * cot(${base.args[0].toString()}) / (${innerUPrime.toString()})`);
+                    }
+                    if (isTwo && base.isFunctionNode && base.fn.name === 'sec') {
+                        const innerUPrime = math.derivative(base.args[0], x);
+                        return math.parse(`tan(${base.args[0].toString()}) / (${innerUPrime.toString()})`);
+                    }
+                    if (isTwo && base.isFunctionNode && base.fn.name === 'csc') {
+                        const innerUPrime = math.derivative(base.args[0], x);
+                        return math.parse(`-1 * cot(${base.args[0].toString()}) / (${innerUPrime.toString()})`);
+                    }
+                    
+                    let expPlusOne = safeSimplify(`(${exp.toString()}) + 1`).toString();
+                    let denom = safeSimplify(`(${expPlusOne}) * (${uPrimeNode.toString()})`).toString();
+                    return math.parse(`((${base.toString()})^(${expPlusOne})) / (${denom})`);
+                }
+                else if (!baseHasX && expHasX && baseIsE) {
+                    const uPrimeNode = math.derivative(exp, x);
+                    return math.parse(`(e^(${exp.toString()})) / (${uPrimeNode.toString()})`);
+                }
+                else if (!baseHasX && expHasX) {
+                    const uPrimeNode = math.derivative(exp, x);
+                    return math.parse(`(${base.toString()}^(${exp.toString()})) / ((${uPrimeNode.toString()}) * log(${base.toString()}))`);
+                }
+                throw new Error("Complex exponent integration not supported.");
+            }
+            if (node.op === '-' && node.args.length === 1) {
+                return math.parse(`-(${integrateNode(node.args[0].toString(), x).toString()})`);
+            }
+            if (node.op === '+' && node.args.length === 1) {
+                return math.parse(`+(${integrateNode(node.args[0].toString(), x).toString()})`);
+            }
+        }
+        if (node.isFunctionNode) {
+            const arg = unwrap(node.args[0]);
+            
+            let argHasX = false;
+            arg.traverse(function(n) { if (n.isSymbolNode && n.name === x) argHasX = true; });
+            
+            if (argHasX) { 
+                const uPrimeNode = math.derivative(arg, x);
+                if (node.fn.name === 'sin') return math.parse(`-1 * cos(${arg.toString()}) / (${uPrimeNode.toString()})`);
+                if (node.fn.name === 'cos') return math.parse(`sin(${arg.toString()}) / (${uPrimeNode.toString()})`);
+                if (node.fn.name === 'exp') return math.parse(`exp(${arg.toString()}) / (${uPrimeNode.toString()})`);
+                
+                if (node.fn.name === 'tan') return math.parse(`-1 * log(abs(cos(${arg.toString()}))) / (${uPrimeNode.toString()})`);
+                if (node.fn.name === 'cot') return math.parse(`1 * log(abs(sin(${arg.toString()}))) / (${uPrimeNode.toString()})`);
+            }
+            throw new Error(`Integration of function ${node.fn.name} with complex inner argument not supported.`);
+        }
+        throw new Error(`Expression structure not recognized for integration: ${node.toString()}`);
+    }
+
+    function integrateSafe(nodeStr, x = 'x') {
+        try {
+            return integrateNode(nodeStr, x);
+        } catch (e) {
+            console.error(e);
+            throw new Error(`Cannot analytically integrate this expression: ${nodeStr}. Reason: ${e.message}`);
+        }
+    }
+
+    const RULE_CATALOG = {
+        "Constant Multiple": { display: "Constant Multiple (A)", dx: "\\int k \\cdot f(x) \\, dx = k \\int f(x) \\, dx", du: "" },
+        "Constant": { display: "Constant Rule (C)", dx: "\\int a \\, dx = ax + C", du: "" },
+        "Power": { display: "Power Rule (1)", dx: "\\int x^n \\, dx = \\frac{x^{n+1}}{n+1} + C", du: "\\int u^n \\, dx = \\frac{1}{u'} \\frac{u^{n+1}}{n+1} + C" },
+        "1/u": { display: "1/u Rule (2)", dx: "\\int \\frac{1}{x} \\, dx = \\ln|x| + C", du: "\\int \\frac{1}{u} \\, dx = \\frac{1}{u'} \\ln|u| + C" },
+        "ExpE": { display: "Exponential (Base e) (3)", dx: "\\int e^x \\, dx = e^x + C", du: "\\int e^u \\, dx = \\frac{1}{u'} e^u + C" },
+        "ExpA": { display: "Exponential (Base a) (4)", dx: "\\int a^x \\, dx = \\frac{a^x}{\\ln a} + C", du: "\\int a^u \\, dx = \\frac{1}{u'} \\frac{a^u}{\\ln a} + C" },
+        "Sin": { display: "Sine Rule (5)", dx: "\\int \\sin x \\, dx = -\\cos x + C", du: "\\int \\sin u \\, dx = -\\frac{1}{u'} \\cos u + C" },
+        "Cos": { display: "Cosine Rule (6)", dx: "\\int \\cos x \\, dx = \\sin x + C", du: "\\int \\cos u \\, dx = \\frac{1}{u'} \\sin u + C" },
+        "Sec2": { display: "Inverse Cosine Squared (7)", dx: "\\int \\frac{1}{\\cos^2 x} \\, dx = \\tan x + C", du: "\\int \\frac{1}{\\cos^2 u} \\, dx = \\frac{1}{u'} \\tan u + C" },
+        "Csc2": { display: "Inverse Sine Squared (8)", dx: "\\int \\frac{1}{\\sin^2 x} \\, dx = -\\cot x + C", du: "\\int \\frac{1}{\\sin^2 u} \\, dx = -\\frac{1}{u'} \\cot u + C" },
+        "Tan": { display: "Tangent Rule (9)", dx: "\\int \\tan x \\, dx = -\\ln|\\cos x| + C", du: "\\int \\tan u \\, dx = -\\frac{1}{u'} \\ln|\\cos u| + C" },
+        "Cot": { display: "Cotangent Rule (10)", dx: "\\int \\cot x \\, dx = \\ln|\\sin x| + C", du: "\\int \\cot u \\, dx = \\frac{1}{u'} \\ln|\\sin u| + C" },
+        "SumDiff": { display: "Sum / Difference (B)", dx: "\\int [f(x) \\pm g(x)] \\, dx = \\int f(x) \\, dx \\pm \\int g(x) \\, dx", du: "" }
+    };
+
+    function safeSimplify(nodeOrStr) {
+        let node = typeof nodeOrStr === 'string' ? math.parse(nodeOrStr) : nodeOrStr;
+        let originalNode = typeof node.clone === 'function' ? node.clone() : node;
+        
+        let funcCounter = 0;
+        let funcMap = {};
+        
+        try {
+            node = node.transform(function(n) {
+                if (n.isFunctionNode || (n.isOperatorNode && n.op === '^')) {
+                    let key = 'PROTECTEDFUNC' + funcCounter++;
+                    funcMap[key] = n;
+                    return new math.SymbolNode(key);
+                }
+                return n;
+            });
+            
+            node = math.simplify(node);
+            
+            node = node.transform(function(n) {
+                if (n.isSymbolNode && funcMap.hasOwnProperty(n.name)) {
+                    return funcMap[n.name];
+                }
+                return n;
+            });
+        } catch(e) {
+            node = originalNode;
+        }
+        
+        for(let i=0; i<4; i++) {
+            node = node.transform(function (n) {
+                if (n.isOperatorNode && n.op === '^' && n.args[1].isOperatorNode && n.args[1].op === '-') {
+                    let base = n.args[0];
+                    let exp = n.args[1];
+                    let left = exp.args[0];
+                    let right = exp.args[1];
+                    if (left.isConstantNode && left.value > 0) {
+                        let baseVal = getConstantValue(base);
+                        if (baseVal !== null) {
+                            let numVal = Math.pow(baseVal, left.value);
+                            if (Number.isInteger(numVal)) {
+                                let num = new math.ConstantNode(numVal);
+                                let den = new math.OperatorNode('^', 'pow', [base, right]);
+                                return new math.OperatorNode('/', 'divide', [num, den]);
+                            }
+                        }
+                    }
+                }
+                
+                if (n.isOperatorNode && n.op === '^' && n.args[1].isOperatorNode && n.args[1].op === '+') {
+                    let base = n.args[0];
+                    let exp = n.args[1];
+                    let left = exp.args[0];
+                    let right = exp.args[1];
+                    if (left.isConstantNode && left.value > 0) {
+                        let baseVal = getConstantValue(base);
+                        if (baseVal !== null) {
+                            let numVal = Math.pow(baseVal, left.value);
+                            if (Number.isInteger(numVal)) {
+                                return new math.OperatorNode('*', 'multiply', [
+                                    new math.ConstantNode(numVal),
+                                    new math.OperatorNode('^', 'pow', [base, right])
+                                ]);
+                            }
+                        }
+                    } else if (right.isConstantNode && right.value > 0) {
+                        let baseVal = getConstantValue(base);
+                        if (baseVal !== null) {
+                            let numVal = Math.pow(baseVal, right.value);
+                            if (Number.isInteger(numVal)) {
+                                return new math.OperatorNode('*', 'multiply', [
+                                    new math.ConstantNode(numVal),
+                                    new math.OperatorNode('^', 'pow', [base, left])
+                                ]);
+                            }
+                        }
+                    }
+                }
+                
+                if (n.isOperatorNode && n.op === '^' && n.args[1].isOperatorNode && n.args[1].op === '-' && n.args[1].fn === 'unaryMinus') {
+                    let base = n.args[0];
+                    let inner = n.args[1].args[0];
+                    return new math.OperatorNode('/', 'divide', [
+                        new math.ConstantNode(1),
+                        new math.OperatorNode('^', 'pow', [base, inner])
+                    ]);
+                }
+
+                if (n.isOperatorNode && n.op === '/' && n.args[0].isOperatorNode && n.args[0].op === '/') {
+                    return new math.OperatorNode('/', 'divide', [
+                        n.args[0].args[0],
+                        new math.OperatorNode('*', 'multiply', [n.args[0].args[1], n.args[1]])
+                    ]);
+                }
+                
+                if (n.isOperatorNode && n.op === '/' && n.args[1].isOperatorNode && n.args[1].op === '/') {
+                    return new math.OperatorNode('/', 'divide', [
+                        new math.OperatorNode('*', 'multiply', [n.args[0], n.args[1].args[1]]),
+                        n.args[1].args[0]
+                    ]);
+                }
+
+                if (n.isOperatorNode && n.op === '*') {
+                    let left = n.args[0];
+                    let right = n.args[1];
+                    if (left.isOperatorNode && left.op === '/') {
+                        return new math.OperatorNode('/', 'divide', [
+                            new math.OperatorNode('*', 'multiply', [left.args[0], right]),
+                            left.args[1]
+                        ]);
+                    }
+                    if (right.isOperatorNode && right.op === '/') {
+                        return new math.OperatorNode('/', 'divide', [
+                            new math.OperatorNode('*', 'multiply', [left, right.args[0]]),
+                            right.args[1]
+                        ]);
+                    }
+                }
+
+                if (n.isOperatorNode && n.op === '/') {
+                    let numTerms = [];
+                    let denTerms = [];
+                    
+                    function extractMult(node, arr) {
+                        if (node.isOperatorNode && node.op === '*') {
+                            extractMult(node.args[0], arr);
+                            extractMult(node.args[1], arr);
+                        } else if (node.isOperatorNode && node.op === '-' && node.fn === 'unaryMinus') {
+                            arr.push(new math.ConstantNode(-1));
+                            extractMult(node.args[0], arr);
+                        } else if (node.isParenthesisNode) {
+                            extractMult(node.content, arr);
+                        } else {
+                            arr.push(node);
+                        }
+                    }
+                    
+                    extractMult(unwrap(n.args[0]), numTerms);
+                    extractMult(unwrap(n.args[1]), denTerms);
+                    
+                    let changed = false;
+                    for (let i = 0; i < numTerms.length; i++) {
+                        for (let j = 0; j < denTerms.length; j++) {
+                            if (numTerms[i] && denTerms[j]) {
+                                let nStr = numTerms[i].toString();
+                                let dStr = denTerms[j].toString();
+                                
+                                if (nStr === dStr && nStr !== '1' && nStr !== '-1') {
+                                    numTerms[i] = null;
+                                    denTerms[j] = null;
+                                    changed = true;
+                                } else {
+                                    
+                                    let hasXNum = false; numTerms[i].traverse(n => { if (n.isSymbolNode && (n.name === 'x' || n.name === 'u')) hasXNum = true; });
+                                    let hasXDen = false; denTerms[j].traverse(n => { if (n.isSymbolNode && (n.name === 'x' || n.name === 'u')) hasXDen = true; });
+                                    
+                                    if (hasXNum && hasXDen) {
+                                        try {
+                                            let scope1 = {x: 2.14159, u: 2.14159};
+                                            let scope2 = {x: 3.14159, u: 3.14159};
+                                            let n1 = numTerms[i].evaluate(scope1);
+                                            let d1 = denTerms[j].evaluate(scope1);
+                                            let n2 = numTerms[i].evaluate(scope2);
+                                            let d2 = denTerms[j].evaluate(scope2);
+                                            
+                                            let ratio1 = d1 / n1;
+                                            let ratio2 = d2 / n2;
+                                            
+                                            if (Math.abs(ratio1 - ratio2) < 1e-8 && Math.abs(ratio1) > 1e-8) {
+                                                numTerms[i] = new math.ConstantNode(1);
+                                                let rRound = Math.round(ratio1 * 100000) / 100000;
+                                                denTerms[j] = new math.ConstantNode(rRound);
+                                                changed = true;
+                                            }
+                                        } catch(e) {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (changed) {
+                        let buildMult = (arr) => {
+                            let valid = arr.filter(x => x !== null);
+                            if (valid.length === 0) return new math.ConstantNode(1);
+                            let res = valid[0];
+                            for (let k = 1; k < valid.length; k++) {
+                                res = new math.OperatorNode('*', 'multiply', [res, valid[k]]);
+                            }
+                            return res;
+                        };
+                        
+                        let newNum = buildMult(numTerms);
+                        let newDen = buildMult(denTerms);
+                        
+                        if (newDen.isConstantNode && newDen.value === 1) n = newNum;
+                        else n = new math.OperatorNode('/', 'divide', [newNum, newDen]);
+                    }
+                }
+
+                if (n.isOperatorNode && n.op === '/') {
+                    function extractSignAndNum(xNode) {
+                        if (xNode.isConstantNode) {
+                            return { sign: xNode.value < 0 ? -1 : 1, val: Math.abs(xNode.value), node: new math.ConstantNode(1) };
+                        }
+                        if (xNode.isOperatorNode && xNode.op === '-' && xNode.fn === 'unaryMinus') {
+                            let inner = extractSignAndNum(xNode.args[0]);
+                            return { sign: -inner.sign, val: inner.val, node: inner.node };
+                        }
+                        if (xNode.isOperatorNode && xNode.op === '*') {
+                            let l = extractSignAndNum(xNode.args[0]);
+                            let r = extractSignAndNum(xNode.args[1]);
+                            if (l.node.isConstantNode && l.node.value === 1) return { sign: l.sign * r.sign, val: l.val * r.val, node: r.node };
+                            if (r.node.isConstantNode && r.node.value === 1) return { sign: l.sign * r.sign, val: l.val * r.val, node: l.node };
+                            return { sign: l.sign * r.sign, val: l.val * r.val, node: new math.OperatorNode('*', 'multiply', [l.node, r.node]) };
+                        }
+                        if (xNode.isParenthesisNode) {
+                            let inner = extractSignAndNum(xNode.content);
+                            if (inner.node.isConstantNode && inner.node.value === 1) return inner; 
+                            return { sign: inner.sign, val: inner.val, node: new math.ParenthesisNode(inner.node) };
+                        }
+                        return { sign: 1, val: 1, node: xNode };
+                    }
+                    
+                    let numData = extractSignAndNum(n.args[0]);
+                    let denData = extractSignAndNum(n.args[1]);
+                    
+                    let totalNum = numData.sign * numData.val;
+                    let totalDen = denData.sign * denData.val;
+                    
+                    if (totalNum !== 1 || totalDen !== 1) {
+                        try {
+                            if (Number.isInteger(totalNum) && Number.isInteger(totalDen) && totalDen !== 0) {
+                                let gcd = math.gcd(Math.abs(totalNum), Math.abs(totalDen));
+                                totalNum /= gcd;
+                                totalDen /= gcd;
+                            } else if (totalDen !== 0) {
+                                let div = totalNum / totalDen;
+                                if (Number.isInteger(div)) {
+                                    totalNum = div;
+                                    totalDen = 1;
+                                }
+                            }
+                        } catch(e) {}
+                        
+                        let finalSign = (totalNum < 0 ? -1 : 1) * (totalDen < 0 ? -1 : 1);
+                        totalNum = Math.abs(totalNum);
+                        totalDen = Math.abs(totalDen);
+                        
+                        let newNum = numData.node;
+                        if (totalNum !== 1) {
+                            if (newNum.isConstantNode && newNum.value === 1) {
+                                newNum = new math.ConstantNode(totalNum);
+                            } else {
+                                newNum = new math.OperatorNode('*', 'multiply', [new math.ConstantNode(totalNum), newNum]);
+                            }
+                        }
+                        if (finalSign === -1) newNum = new math.OperatorNode('-', 'unaryMinus', [newNum]);
+                        
+                        let newDen = denData.node;
+                        if (totalDen !== 1) {
+                            if (newDen.isConstantNode && newDen.value === 1) {
+                                newDen = new math.ConstantNode(totalDen);
+                            } else {
+                                newDen = new math.OperatorNode('*', 'multiply', [new math.ConstantNode(totalDen), newDen]);
+                            }
+                        }
+                        
+                        if (newDen.isConstantNode && newDen.value === 1) {
+                            return newNum;
+                        }
+                        n = new math.OperatorNode('/', 'divide', [newNum, newDen]);
+                    }
+                }
+
+                if (n.isOperatorNode && n.op === '*') {
+                    let l = n.args[0];
+                    let r = n.args[1];
+                    if (r.isConstantNode && !l.isConstantNode) {
+                        return new math.OperatorNode('*', 'multiply', [r, l]);
+                    }
+                }
+
+                if (n.isOperatorNode && n.op === '*') {
+                    let l = unwrap(n.args[0]);
+                    let r = unwrap(n.args[1]);
+                    if (l.isConstantNode && l.value === 1) return r;
+                    if (r.isConstantNode && r.value === 1) return l;
+                    if (l.isConstantNode && l.value === -1) return new math.OperatorNode('-', 'unaryMinus', [r]);
+                    if (r.isConstantNode && r.value === -1) return new math.OperatorNode('-', 'unaryMinus', [l]);
+                }
+                
+                if (n.isOperatorNode && n.op === '/') {
+                    let r = unwrap(n.args[1]);
+                    if (r.isConstantNode && r.value === 1) return unwrap(n.args[0]);
+                    if (r.isConstantNode && r.value === -1) return new math.OperatorNode('-', 'unaryMinus', [unwrap(n.args[0])]);
+                }
+
+                return n;
+            });
+        }
+        return node;
+    }
+
+    function cleanTex(texStr) {
+        if (!texStr) return "";
+        return texStr
+            .replace(/\+\s*-/g, '- ')
+            .replace(/\+\s*\\int\s*-/g, '- \\int ')
+            .replace(/\\cdot\s*(?=[a-zA-Z\(\\])/g, '')
+            .replace(/\\log/g, '\\ln')
+            .replace(/\\mathrm\{abs\}\\left\(\\sin\\left\((.*?)\\right\)\\right\)/g, '\\left|\\sin\\left($1\\right)\\right|')
+            .replace(/\\mathrm\{abs\}\\left\(\\cos\\left\((.*?)\\right\)\\right\)/g, '\\left|\\cos\\left($1\\right)\\right|')
+            .replace(/~/g, '') // Fix: math.js outputs '~' for spaces, which hard-crashes Desmos rendering.
+            .replace(/\\mathrm\{e\}/g, 'e'); // Fix: Force clean 'e' for Desmos
+    }
+
+    function getTerms(node) {
+        let terms = [];
+        function traverseAddSub(n, sign) {
+            if (n.isOperatorNode && (n.op === '+' || n.op === '-')) {
+                traverseAddSub(n.args[0], sign);
+                let rightSign = n.op === '-' ? -sign : sign;
+                traverseAddSub(n.args[1], rightSign);
+            } else {
+                if (sign === -1) {
+                    terms.push(new math.OperatorNode('-', 'unaryMinus', [n]));
+                } else {
+                    terms.push(n);
+                }
+            }
+        }
+        traverseAddSub(node, 1);
+        return terms;
+    }
+
+    function analyzeTerm(termNode) {
+        let constantStr = "1";
+        let coreNode = unwrap(termNode);
+        let isUSub = false;
+        let uNode = math.parse('x');
+        let rulesUsed = [];
+        
+        let peeled = true;
+        while (peeled) {
+            peeled = false;
+            coreNode = unwrap(coreNode);
+            if (coreNode.isOperatorNode && coreNode.op === '-' && coreNode.fn === 'unaryMinus') {
+                constantStr = constantStr === "-1" ? "1" : `(-1) * (${constantStr})`;
+                coreNode = coreNode.args[0];
+                peeled = true;
+            } else if (coreNode.isOperatorNode && coreNode.op === '*') {
+                let left = unwrap(coreNode.args[0]);
+                let right = unwrap(coreNode.args[1]);
+                let lHasX = false; left.traverse(n => { if (n.isSymbolNode && n.name === 'x') lHasX = true; });
+                let rHasX = false; right.traverse(n => { if (n.isSymbolNode && n.name === 'x') rHasX = true; });
+                if (!lHasX && rHasX) {
+                    constantStr = `(${constantStr}) * (${left.toString()})`;
+                    coreNode = right; peeled = true;
+                } else if (lHasX && !rHasX) {
+                    constantStr = `(${constantStr}) * (${right.toString()})`;
+                    coreNode = left; peeled = true;
+                } else if (!lHasX && !rHasX) {
+                    constantStr = `(${constantStr}) * (${coreNode.toString()})`;
+                    coreNode = math.parse('1'); peeled = true;
+                }
+            } else if (coreNode.isOperatorNode && coreNode.op === '/') {
+                let num = unwrap(coreNode.args[0]);
+                let den = unwrap(coreNode.args[1]);
+                let numHasX = false; num.traverse(n => { if (n.isSymbolNode && n.name === 'x') numHasX = true; });
+                let denHasX = false; den.traverse(n => { if (n.isSymbolNode && n.name === 'x') denHasX = true; });
+                
+                if (!numHasX && denHasX) {
+                    if (num.toString() !== '1') {
+                        constantStr = `(${constantStr}) * (${num.toString()})`;
+                        coreNode = math.parse(`1 / (${den.toString()})`);
+                        peeled = true;
+                    }
+                    if (den.isOperatorNode && den.op === '*') {
+                        let dLeft = unwrap(den.args[0]);
+                        let dRight = unwrap(den.args[1]);
+                        let dlHasX = false; dLeft.traverse(n => { if (n.isSymbolNode && n.name === 'x') dlHasX = true; });
+                        let drHasX = false; dRight.traverse(n => { if (n.isSymbolNode && n.name === 'x') drHasX = true; });
+                        if (!dlHasX && drHasX) {
+                            constantStr = `(${constantStr}) / (${dLeft.toString()})`;
+                            coreNode = math.parse(`1 / (${dRight.toString()})`);
+                            peeled = true;
+                        } else if (dlHasX && !drHasX) {
+                            constantStr = `(${constantStr}) / (${dRight.toString()})`;
+                            coreNode = math.parse(`1 / (${dLeft.toString()})`);
+                            peeled = true;
+                        }
+                    }
+                } else if (numHasX && !denHasX) {
+                    if (den.toString() !== '1') {
+                        constantStr = `(${constantStr}) / (${den.toString()})`;
+                        coreNode = num;
+                        peeled = true;
+                    }
+                } else if (!numHasX && !denHasX) {
+                    constantStr = `(${constantStr}) * (${coreNode.toString()})`;
+                    coreNode = math.parse('1');
+                    peeled = true;
+                }
+            }
+        }
+        try {
+            constantStr = safeSimplify(math.parse(constantStr)).toString();
+        } catch(e) {}
+
+        let ruleName = "Power";
+        
+        let applyRules = (node, strictComposite = false) => {
+            if (node.isSymbolNode && node.name === 'x') { 
+                if (strictComposite) return false;
+                uNode = node; ruleName = "Power"; return true; 
+            }
+            
+            if (node.isFunctionNode) {
+                let innerArg = unwrap(node.args[0]);
+                let innerHasX = false; innerArg.traverse(xNode => { if (xNode.isSymbolNode && xNode.name === 'x') innerHasX = true; });
+                if (innerHasX) {
+                    if (strictComposite && innerArg.toString() === 'x') return false;
+                    uNode = innerArg;
+                    if (node.fn.name === 'sin') { ruleName = "Sin"; return true; }
+                    if (node.fn.name === 'cos') { ruleName = "Cos"; return true; }
+                    if (node.fn.name === 'tan') { ruleName = "Tan"; return true; }
+                    if (node.fn.name === 'cot') { ruleName = "Cot"; return true; }
+                    if (node.fn.name === 'exp') { ruleName = "ExpE"; return true; }
+                }
+            }
+
+            if (node.isOperatorNode && node.op === '^') {
+                let b = unwrap(node.args[0]);
+                let e = unwrap(node.args[1]);
+                let bHasX = false; b.traverse(xNode => { if (xNode.isSymbolNode && xNode.name === 'x') bHasX = true; });
+                let eHasX = false; e.traverse(xNode => { if (xNode.isSymbolNode && xNode.name === 'x') eHasX = true; });
+                
+                if (bHasX && eHasX) throw new Error("This is OUTSIDE THE RANGE OF YOUR SYLLABUS, go back before you lost your ways, young one! 👽");
+                if (!bHasX && eHasX) {
+                    if (strictComposite && e.toString() === 'x') return false;
+                    uNode = e; 
+                    let baseIsE = b.toString() === 'e' || (b.isSymbolNode && b.name === 'e');
+                    ruleName = baseIsE ? "ExpE" : "ExpA"; 
+                    return true;
+                }
+                if (bHasX && !eHasX) {
+                    let isNegativeOne = false;
+                    let isNegativeTwo = false;
+                    let isTwo = false;
+                    try { 
+                        let evalExp = math.evaluate(e.toString());
+                        if (evalExp === -1) isNegativeOne = true; 
+                        if (evalExp === -2) isNegativeTwo = true;
+                        if (evalExp === 2) isTwo = true;
+                    } catch(err) {}
+                    
+                    if (isNegativeOne) { 
+                        if (strictComposite && b.toString() === 'x') return false;
+                        if (b.isFunctionNode && b.fn.name === 'tan') { uNode = unwrap(b.args[0]); ruleName = "Cot"; return true; }
+                        if (b.isFunctionNode && b.fn.name === 'cot') { uNode = unwrap(b.args[0]); ruleName = "Tan"; return true; }
+                        uNode = b; ruleName = "1/u"; return true; 
+                    } 
+                    if (isNegativeTwo && b.isFunctionNode && b.fn.name === 'cos') { uNode = unwrap(b.args[0]); ruleName = "Sec2"; return true; } 
+                    if (isNegativeTwo && b.isFunctionNode && b.fn.name === 'sin') { uNode = unwrap(b.args[0]); ruleName = "Csc2"; return true; } 
+                    if (isTwo && b.isFunctionNode && b.fn.name === 'sec') { uNode = unwrap(b.args[0]); ruleName = "Sec2"; return true; } 
+                    if (isTwo && b.isFunctionNode && b.fn.name === 'csc') { uNode = unwrap(b.args[0]); ruleName = "Csc2"; return true; } 
+                    
+                    if (strictComposite && b.toString() === 'x') return false;
+                    uNode = b; ruleName = "Power"; return true;
+                }
+            }
+
+            if (node.isOperatorNode && node.op === '/') {
+                let rBase = unwrap(node.args[1]);
+                let rBaseHasX = false; rBase.traverse(xNode => { if (xNode.isSymbolNode && xNode.name === 'x') rBaseHasX = true; });
+                
+                if (rBaseHasX) {
+                    if (rBase.isOperatorNode && rBase.op === '^') {
+                        let rB = unwrap(rBase.args[0]);
+                        let rE = unwrap(rBase.args[1]);
+                        let rbHas = false; rB.traverse(xNode => { if (xNode.isSymbolNode && xNode.name === 'x') rbHas = true; });
+                        let reHas = false; rE.traverse(xNode => { if (xNode.isSymbolNode && xNode.name === 'x') reHas = true; });
+                        
+                        if (rbHas && reHas) throw new Error("This is OUTSIDE THE RANGE OF YOUR SYLLABUS, go back before you lost your ways, young one! 👽");
+                        if (!rbHas && reHas) {
+                            if (strictComposite && rE.toString() === 'x') return false;
+                            uNode = rE; 
+                            ruleName = (rB.toString() === 'e' || (rB.isSymbolNode && rB.name === 'e')) ? "ExpE" : "ExpA"; 
+                            return true;
+                        }
+                        if (rbHas && !reHas) {
+                            if (rB.isFunctionNode) {
+                                let isTwo = false; try { if(math.evaluate(rE.toString()) === 2) isTwo = true; } catch(err){}
+                                if (isTwo && rB.fn.name === 'cos') { uNode = unwrap(rB.args[0]); ruleName = "Sec2"; return true; }
+                                if (isTwo && rB.fn.name === 'sin') { uNode = unwrap(rB.args[0]); ruleName = "Csc2"; return true; }
+                            }
+                            if (strictComposite && rB.toString() === 'x') return false;
+                            uNode = rB; ruleName = "Power"; return true;
+                        }
+                    }
+                    if (rBase.isFunctionNode && rBase.fn.name === 'exp') { 
+                        if (strictComposite && unwrap(rBase.args[0]).toString() === 'x') return false;
+                        uNode = unwrap(rBase.args[0]); ruleName = "ExpE"; return true; 
+                    }
+                    
+                    if (rBase.isFunctionNode && rBase.fn.name === 'tan') { uNode = unwrap(rBase.args[0]); ruleName = "Cot"; return true; }
+                    if (rBase.isFunctionNode && rBase.fn.name === 'cot') { uNode = unwrap(rBase.args[0]); ruleName = "Tan"; return true; }
+                    
+                    if (strictComposite && rBase.toString() === 'x') return false;
+                    uNode = rBase; ruleName = "1/u"; return true;
+                }
+            }
+            return false;
+        };
+
+        function detect(n) {
+            n = unwrap(n);
+
+            let localHasX = false;
+            n.traverse(function(node) { if (node.isSymbolNode && node.name === 'x') localHasX = true; });
+
+            if (!localHasX) {
+                uNode = math.parse('x'); ruleName = "Constant"; return;
+            }
+
+            if (applyRules(n, false)) return;
+
+            if (n.isOperatorNode && n.op === '*') {
+                let left = unwrap(n.args[0]);
+                let right = unwrap(n.args[1]);
+                if (applyRules(right, true)) return;
+                if (applyRules(left, true)) return;
+                if (applyRules(right, false)) return;
+                if (applyRules(left, false)) return;
+            }
+
+            uNode = n; ruleName = "Power";
+        }
+        
+        detect(coreNode);
+        
+        let uStr = "";
+        try { uStr = safeSimplify(uNode).toString(); } catch(e) { uStr = uNode.toString(); }
+        let uNodeOriginalStr = uNode.toString(); 
+        
+        isUSub = (uStr !== 'x' && uStr !== '');
+        
+        let localCoreHasX = false;
+        coreNode.traverse(function(node) { if (node.isSymbolNode && node.name === 'x') localCoreHasX = true; });
+        if (!localCoreHasX) isUSub = false; 
+        
+        if (isUSub && RULE_CATALOG[ruleName].du) {
+             rulesUsed.push({name: RULE_CATALOG[ruleName].display, formula: RULE_CATALOG[ruleName].du});
+        } else {
+             rulesUsed.push({name: RULE_CATALOG[ruleName].display, formula: RULE_CATALOG[ruleName].dx});
+        }
+
+        let uPrimeNode = math.derivative(uNode, 'x');
+
+        return {
+            constant: constantStr,
+            coreNode: coreNode,
+            isUSub: isUSub,
+            u: cleanTex(uNode.toTex()),
+            uStr: uStr,
+            uNodeOriginalStr: uNodeOriginalStr,
+            uPrimeRaw: uPrimeNode.toString(),
+            uPrime: cleanTex(uPrimeNode.toTex()),
+            rulesUsed: rulesUsed
+        };
+    }
+
+    function getFullIntegralNodes(funcStr) {
+        const node = math.parse(funcStr);
+        const terms = getTerms(node);
+        let finalTerms = [];
+        
+        terms.forEach((termNode) => {
+            let termData = analyzeTerm(termNode);
+            if (!termData.isUSub) {
+                 let coreIntNode = integrateSafe(termData.coreNode.toString(), 'x');
+                 let fullStr = termData.constant === "-1" ? `-(${coreIntNode.toString()})` : `(${termData.constant}) * (${coreIntNode.toString()})`;
+                 finalTerms.push(safeSimplify(fullStr));
+            } else {
+                 let coreNodeU;
+                 try {
+                     coreNodeU = termData.coreNode.transform(function (n) {
+                          let nStr = unwrap(n).toString().replace(/\s+/g, '');
+                          let targetStr = termData.uNodeOriginalStr.replace(/\s+/g, '');
+                          if (nStr === targetStr && nStr !== 'x') return math.parse('u');
+                          if (n.isSymbolNode && n.name === 'x' && termData.uStr === 'x') return math.parse('u');
+                          return n;
+                     });
+                 } catch(e) {
+                     let rawCoreStr = termData.coreNode.toString();
+                     let rawUStr = termData.uNodeOriginalStr;
+                     let replacedStr = rawCoreStr.split(rawUStr).join('u');
+                     coreNodeU = math.parse(replacedStr);
+                 }
+
+                 let numStr = termData.constant === "-" ? "-1" : (termData.constant || "1");
+                 let combinedIntegrandNode = new math.OperatorNode('/', 'divide', [
+                     new math.OperatorNode('*', 'multiply', [math.parse(numStr), coreNodeU]),
+                     math.parse(termData.uPrimeRaw)
+                 ]);
+                 combinedIntegrandNode = safeSimplify(combinedIntegrandNode);
+
+                 let intU = integrateSafe(combinedIntegrandNode.toString(), 'u');
+                 let intNodeSimplifiedFinal = safeSimplify(intU);
+                 
+                 intNodeSimplifiedFinal = intNodeSimplifiedFinal.transform(function(n) {
+                     if (n.isSymbolNode && n.name === 'u') return math.parse(termData.uNodeOriginalStr);
+                     return n;
+                 });
+                 finalTerms.push(safeSimplify(intNodeSimplifiedFinal));
+            }
+        });
+        return { terms, finalTerms };
+    }
+
+    function classifyExpression(node, x = 'x') {
+        node = unwrap(node);
+
+        let hasX = false;
+        node.traverse(n => {
+            if (n.isSymbolNode && n.name === x) hasX = true;
+        });
+
+        if (!hasX) return { type: "constant", valid: true };
+
+        if (node.isOperatorNode && node.op === '^') {
+            let base = unwrap(node.args[0]);
+            let exp = unwrap(node.args[1]);
+
+            let baseHasX = false;
+            base.traverse(n => { if (n.isSymbolNode && n.name === x) baseHasX = true; });
+
+            let expHasX = false;
+            exp.traverse(n => { if (n.isSymbolNode && n.name === x) expHasX = true; });
+
+            if (baseHasX && expHasX) {
+                return { valid: false, message: "This form (like x^x or u^x) is outside the scope of this course." };
+            }
+
+            if (base.isFunctionNode) {
+                const fn = base.fn.name;
+
+                if (['sin', 'cos', 'tan', 'cot', 'sec', 'csc'].includes(fn)) {
+                    try {
+                        let val = math.evaluate(exp.toString());
+                        if (['tan', 'cot'].includes(fn)) {
+                            if (val === 0 || val === 1 || val === -1) return { type: "trig", valid: true };
+                            return { valid: false, message: `Powers of ${fn} are restricted to 0, 1, and -1 in this syllabus.` };
+                        }
+                        if (['sin', 'cos'].includes(fn)) {
+                            if (val === 1 || val === -2) return { type: "trig", valid: true };
+                            return { valid: false, message: `Powers of ${fn} are restricted to 1 and -2 in this syllabus.` };
+                        }
+                        if (['sec', 'csc'].includes(fn)) {
+                            if (val === 1 || val === 2) return { type: "trig", valid: true };
+                            return { valid: false, message: `Powers of ${fn} are restricted to 1 and 2 in this syllabus.` };
+                        }
+                        return { valid: false, message: "This requires a trigonometric identity, which is outside the scope of this tool." };
+                    } catch (e) {
+                        return { valid: false, message: "Unsupported trigonometric power." };
+                    }
+                }
+            }
+            return { type: "power_or_exp", valid: true };
+        }
+
+        if (node.isFunctionNode) {
+            const fn = node.fn.name;
+            if (['sin', 'cos', 'tan', 'cot', 'sec', 'csc', 'exp'].includes(fn)) {
+                return { type: "function", valid: true };
+            }
+        }
+
+        if (node.isOperatorNode && node.op === '/') {
+            return { type: "quotient", valid: true };
+        }
+
+        return { type: "general", valid: true };
+    }
+
+    function solveIntegration() {
+        const rawFuncStr = document.getElementById('masterFunctionInt').value;
+        const funcStr = rawFuncStr
+            .replace(/(sin|cos|tan|cot|sec|csc)\s*\^\s*([-\d]+)\s*\(([^)]+)\)/g, '($1($3))^$2')
+            .replace(/ln/g, 'log');
+            
+        const ptX = document.getElementById('pointX').value.replace(/ln/g, 'log');
+        const ptY = document.getElementById('pointY').value.replace(/ln/g, 'log');
+        const resultDiv = document.getElementById('integration-result');
+        
+        try {
+            if (!funcStr.trim()) throw new Error("Please enter a master function.");
+            
+            const node = math.parse(funcStr);
+            const classification = classifyExpression(node);
+
+            if (!classification.valid) {
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = `<div class="error-box">${classification.message}</div>`;
+                return;
+            }
+
+            const originalTex = cleanTex(node.toTex());
+            
+            let globalRules = new Map();
+            let step1IsolatedParts = [];
+            let step2HTML = "";
+            let step3HTML = "";
+            let step4HTML = "";
+            
+            const { terms, finalTerms } = getFullIntegralNodes(funcStr);
+            
+            if (terms.length > 1) {
+                globalRules.set(RULE_CATALOG["SumDiff"].display, RULE_CATALOG["SumDiff"].dx);
+            }
+            
+            terms.forEach((termNode, index) => {
+                let termData = analyzeTerm(termNode);
+                termData.rulesUsed.forEach(r => globalRules.set(r.name, r.formula));
+                
+                let termWrapperStart = terms.length > 1 ? `<div style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px dashed #e1e8ed;"><strong>Term ${index + 1}:</strong><br>` : `<div>`;
+                
+                let prefix = "";
+                if (termData.constant === "-1") prefix = "- ";
+                else if (termData.constant !== "1") prefix = `${cleanTex(math.parse(termData.constant).toTex())} `;
+                step1IsolatedParts.push(`${prefix}\\int (${cleanTex(termData.coreNode.toTex())}) \\, dx`);
+
+                step2HTML += termWrapperStart;
+                if (!termData.isUSub) {
+                    step2HTML += `Basic term, no $u$-substitution needed.`;
+                } else {
+                    step2HTML += `Let $u = ${termData.u}$. Differentiate: $\\displaystyle \\frac{du}{dx} = ${termData.uPrime} \\Rightarrow dx = \\frac{du}{${termData.uPrime}}$`;
+                }
+                step2HTML += `</div>`;
+                
+                step4HTML += termWrapperStart;
+                if (!termData.isUSub) {
+                     let coreIntTex = '';
+                     try { coreIntTex = cleanTex(safeSimplify(integrateNode(termData.coreNode.toString(), 'x')).toTex()); } catch(e) { coreIntTex = cleanTex(integrateNode(termData.coreNode.toString(), 'x').toTex()); }
+                     let finalConst = "";
+                     if (termData.constant === "-1") finalConst = "- ";
+                     else if (termData.constant !== "1") finalConst = `${cleanTex(math.parse(termData.constant).toTex())} `;
+                     
+                     step4HTML += `<div style="margin-top: 5px;">Direct integration:</div>`;
+                     if (finalConst !== "") {
+                         step4HTML += `<div style="margin-bottom: 8px;">\\( \\displaystyle \\Rightarrow ${finalConst} \\left( ${coreIntTex} \\right) \\)</div>`;
+                     } else {
+                         step4HTML += `<div style="margin-bottom: 8px;">\\( \\displaystyle \\Rightarrow ${coreIntTex} \\)</div>`;
+                     }
+
+                     try {
+                         let intNodeSimplifiedFinal = finalTerms[index];
+                         let simplifiedTex = cleanTex(intNodeSimplifiedFinal.toTex());
+                         let rawTex = finalConst ? `${finalConst}\\left(${coreIntTex}\\right)`.replace(/ /g, '') : coreIntTex.replace(/ /g, '');
+                         if (simplifiedTex.replace(/ /g, '') !== rawTex && simplifiedTex !== coreIntTex) {
+                             step4HTML += `<div style="margin-top: 5px;">Simplify:</div>`;
+                             step4HTML += `<div style="font-size: 1.15em; margin-top: 5px; color: #2980b9;">\\( \\displaystyle \\Rightarrow ${simplifiedTex} \\)</div>`;
+                         } else {
+                             step4HTML = step4HTML.replace(`<div style="margin-bottom: 8px;">\\( \\displaystyle \\Rightarrow ${finalConst}`, `<div style="margin-bottom: 8px; font-size: 1.15em; color: #2980b9;">\\( \\displaystyle \\Rightarrow ${finalConst}`);
+                             step4HTML = step4HTML.replace(`<div style="margin-bottom: 8px;">\\( \\displaystyle \\Rightarrow ${coreIntTex} \\)</div>`, `<div style="margin-bottom: 8px; font-size: 1.15em; color: #2980b9;">\\( \\displaystyle \\Rightarrow ${coreIntTex} \\)</div>`);
+                         }
+                     } catch(e) {}
+                } else {
+                     let coreNodeU;
+                     try {
+                         coreNodeU = termData.coreNode.transform(function (n) {
+                              let nStr = unwrap(n).toString().replace(/\s+/g, '');
+                              let targetStr = termData.uNodeOriginalStr.replace(/\s+/g, '');
+                              if (nStr === targetStr && nStr !== 'x') return math.parse('u');
+                              if (n.isSymbolNode && n.name === 'x' && termData.uStr === 'x') return math.parse('u');
+                              return n;
+                         });
+                     } catch(e) {
+                         let rawCoreStr = termData.coreNode.toString();
+                         let rawUStr = termData.uNodeOriginalStr;
+                         let replacedStr = rawCoreStr.split(rawUStr).join('u');
+                         coreNodeU = math.parse(replacedStr);
+                     }
+
+                     let numStr = termData.constant === "-" ? "-1" : (termData.constant || "1");
+                     let combinedIntegrandNode = new math.OperatorNode('/', 'divide', [
+                         new math.OperatorNode('*', 'multiply', [math.parse(numStr), coreNodeU]),
+                         math.parse(termData.uPrimeRaw)
+                     ]);
+                     combinedIntegrandNode = safeSimplify(combinedIntegrandNode);
+
+                     let coreUIntTex = '';
+                     try { 
+                         let intU = integrateSafe(combinedIntegrandNode.toString(), 'u');
+                         coreUIntTex = cleanTex(safeSimplify(intU).toTex()); 
+                     } catch(e) { coreUIntTex = '\\text{?}'; }
+
+                     step4HTML += `<div style="margin-top: 5px;">Apply substitution:</div>`;
+                     let subPrefix = termData.constant === "-1" ? "-" : termData.constant !== "1" ? cleanTex(math.parse(termData.constant).toTex()) : "";
+                     step4HTML += `<div style="margin-bottom: 8px;">\\( \\displaystyle \\Rightarrow ${subPrefix ? subPrefix + ' ' : ''}\\int (${cleanTex(coreNodeU.toTex())}) \\frac{du}{${termData.uPrime}} \\)</div>`;
+                     step4HTML += `<div style="margin-top: 5px;">Cancel terms & simplify integrand:</div>`;
+                     step4HTML += `<div style="margin-bottom: 8px;">\\( \\displaystyle \\Rightarrow \\int (${cleanTex(combinedIntegrandNode.toTex())}) \\, du \\)</div>`;
+                     step4HTML += `<div style="margin-top: 5px;">Integrate with respect to $u$:</div>`;
+                     step4HTML += `<div style="margin-bottom: 8px;">\\( \\displaystyle \\Rightarrow ${coreUIntTex} \\)</div>`;
+                     
+                     let intNodeSimplifiedFinal = finalTerms[index];
+                     step4HTML += `<div style="margin-top: 5px;">Substitute $u = ${termData.u}$ back & Simplify:</div>`;
+                     step4HTML += `<div style="font-size: 1.15em; margin-top: 5px; color: #2980b9;">\\( \\displaystyle \\Rightarrow ${cleanTex(intNodeSimplifiedFinal.toTex())} \\)</div>`;
+                }
+                step4HTML += `</div>`;
+            });
+            
+            let isolatedEq = cleanTex(step1IsolatedParts.join(' + '));
+            let step1HTML = `<div style="font-size: 1.2em;">$\\displaystyle f(x) = \\int (${originalTex}) \\, dx$</div>`;
+            if (isolatedEq !== `\\int (${originalTex}) \\, dx`) {
+                 step1HTML += `<div style="margin-top: 10px; color: #2980b9;"><strong>Isolate Constants:</strong><br>$\\displaystyle \\Rightarrow ${isolatedEq}$</div>`;
+            }
+            
+            step3HTML = `<ul style="margin: 0; padding-left: 20px; line-height: 2;">`;
+            globalRules.forEach((formula, name) => {
+                 step3HTML += `<li><strong>${name}:</strong> \\( \\displaystyle ${formula} \\)</li>`;
+            });
+            step3HTML += `</ul>`;
+            
+            if (terms.length > 1) {
+                let rawSplitParts = terms.map(t => `\\int ${cleanTex(t.toTex())} \\, dx`);
+                let rawSplitEq = cleanTex(rawSplitParts.join(' + '));
+                step3HTML += `<div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #e1e8ed;">
+                    <strong>Apply Sum / Difference Rule:</strong><br>
+                    <div style="margin-top: 8px; font-size: 1.2em; color: #2c3e50;">\\( \\displaystyle \\Rightarrow ${rawSplitEq} \\)</div>
+                </div>`;
+            }
+            
+            let fullIntNode = finalTerms[0];
+            for(let i = 1; i < finalTerms.length; i++) {
+                fullIntNode = new math.OperatorNode('+', 'add', [fullIntNode, finalTerms[i]]);
+            }
+            fullIntNode = safeSimplify(fullIntNode);
+            
+            let fullIntTex = cleanTex(fullIntNode.toTex());
+            
+            let step5HTML = `Gathering all integrated terms together gives the general form:<br> 
+            <div style="font-size: 1.3em; margin: 15px 0;">$\\displaystyle F(x) = ${fullIntTex} + C$</div>`;
+            
+            if (ptX.trim() !== '' && ptY.trim() !== '') {
+                let xVal = math.evaluate(ptX);
+                let yVal = math.evaluate(ptY);
+                let evalF = fullIntNode.evaluate({x: xVal});
+                
+                let cCalc = yVal - evalF;
+                let cFormat = Math.round(cCalc * 10000) / 10000;
+                
+                step5HTML += `<div style="margin-top: 15px; border-top: 1px dashed #bdc3c7; padding-top: 15px;">
+                    <strong>Find C using given point $(x=${document.getElementById('pointX').value}, y=${document.getElementById('pointY').value})$:</strong><br>
+                    $\\displaystyle F(${document.getElementById('pointX').value}) = ${document.getElementById('pointY').value}$<br>
+                    $\\displaystyle \\Rightarrow ${Math.round(evalF*10000)/10000} + C = ${Math.round(yVal*10000)/10000}$<br>
+                    $\\displaystyle \\Rightarrow C = ${cFormat}$<br><br>
+                    <strong>Final Complete Form:</strong><br>
+                </div>`;
+                
+                let finalFuncStr = `${fullIntTex} ${cFormat >= 0 ? '+' : '-'} ${Math.abs(cFormat)}`;
+                step5HTML += `<div style="font-size: 1.5em; padding: 15px; background: #e8f4f8; border-left: 5px solid #27ae60; border-radius: 5px; text-align: center; margin-top: 10px; color: #2c3e50;">$\\displaystyle \\mathbf{F(x) = ${finalFuncStr}}$</div>`;
+            } else {
+                step5HTML += `<div style="font-size: 0.9em; color: #7f8c8d; text-align: center; margin-top: 8px;">(Enter a coordinate point $(x,y)$ above to solve for a specific 'C')</div>`;
+            }
+            
+            let html = `
+                <div class="steps-wrapper">
+                    <div class="step-box" style="animation-delay: 0.1s;">
+                        <div class="step-title">Step 1: Identify Function & Isolate Constants</div>
+                        <div>${step1HTML}</div>
+                    </div>
+                    <div class="step-box" style="animation-delay: 0.2s;">
+                        <div class="step-title">Step 2: Identify Rules Applied</div>
+                        <div>${step3HTML}</div>
+                    </div>
+                    <div class="step-box" style="animation-delay: 0.3s;">
+                        <div class="step-title">Step 3: Element Breakdown ($u, u', dx$)</div>
+                        <div>${step2HTML}</div>
+                    </div>
+                    <div class="step-box" style="animation-delay: 0.4s;">
+                        <div class="step-title">Step 4: Substitute</div>
+                        <div>${step4HTML}</div>
+                    </div>
+                    <div class="step-box" style="animation-delay: 0.5s; background: #fafdfb; border-left-color: #27ae60;">
+                        <div class="step-title" style="color: #27ae60;">Step 5: Final Answer</div>
+                        <div>${step5HTML}</div>
+                    </div>
+                </div>
+            `;
+            
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = html;
+            
+            if (window.MathJax) {
+                MathJax.typesetClear([resultDiv]);
+                MathJax.typesetPromise([resultDiv]).catch(function (err) {
+                    console.error('MathJax error: ', err.message);
+                });
+            }
+            
+        } catch (error) {
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `
+                <div class="steps-wrapper">
+                    <div class="error-box">
+                        Failed to parse or integrate the function. 
+                        <span class="error-details">Details: ${error.message}</span>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    function solveDefiniteIntegral() {
+        const rawFuncStr = document.getElementById('appFunctionInt').value;
+        const funcStr = rawFuncStr
+            .replace(/(sin|cos|tan|cot|sec|csc)\s*\^\s*([-\d]+)\s*\(([^)]+)\)/g, '($1($3))^$2')
+            .replace(/ln/g, 'log');
+        const aStr = document.getElementById('lowerBound').value.replace(/ln/g, 'log');
+        const bStr = document.getElementById('upperBound').value.replace(/ln/g, 'log');
+        const resultDiv = document.getElementById('def-integral-result');
+        const desmosDiv = document.getElementById('desmos-under-curve');
+        
+        try {
+            if (!funcStr || !aStr || !bStr) throw new Error("Please fill in all fields.");
+            
+            const node = math.parse(funcStr);
+            
+            const { finalTerms } = getFullIntegralNodes(funcStr);
+            let fullIntNode = finalTerms[0];
+            for(let i = 1; i < finalTerms.length; i++) {
+                fullIntNode = new math.OperatorNode('+', 'add', [fullIntNode, finalTerms[i]]);
+            }
+            fullIntNode = safeSimplify(fullIntNode);
+            
+            const a = math.evaluate(aStr);
+            const b = math.evaluate(bStr);
+            
+            const FA = fullIntNode.evaluate({x: a});
+            const FB = fullIntNode.evaluate({x: b});
+            const area = FB - FA;
+            
+            let intTex = cleanTex(fullIntNode.toTex());
+            
+            let html = `
+                <div class="steps-wrapper" style="margin-top: 20px;">
+                    <div class="step-box" style="animation-delay: 0.1s;">
+                        <div class="step-title">Step 1: Find Anti-derivative (General Form)</div>
+                        <div style="font-size: 1.2em;">$\\displaystyle F(x) = \\int (${cleanTex(node.toTex())}) \\, dx = ${intTex}$</div>
+                    </div>
+                    <div class="step-box" style="animation-delay: 0.2s;">
+                        <div class="step-title">Step 2: Evaluate Limits F(b) and F(a)</div>
+                        <div style="font-size: 1.1em; margin-bottom: 8px;">$\\displaystyle F(b) = F(${document.getElementById('upperBound').value}) = ${Math.round(FB*10000)/10000}$</div>
+                        <div style="font-size: 1.1em;">$\\displaystyle F(a) = F(${document.getElementById('lowerBound').value}) = ${Math.round(FA*10000)/10000}$</div>
+                    </div>
+                    <div class="step-box" style="animation-delay: 0.3s; background: #e8f4f8;">
+                        <div class="step-title" style="color: #2980b9;">Step 3: Calculate Definite Area</div>
+                        <div style="font-size: 1.3em; margin-top: 10px;">$\\displaystyle \\text{Area} = \\int_{${document.getElementById('lowerBound').value}}^{${document.getElementById('upperBound').value}} f(x) \\, dx = F(b) - F(a) = \\mathbf{${Math.round(area*10000)/10000}}$</div>
+                    </div>
+                </div>
+            `;
+            resultDiv.innerHTML = html;
+            resultDiv.style.display = 'block';
+            MathJax.typesetPromise([resultDiv]);
+            
+            // Launch Desmos Chart
+            if (desmosDiv) {
+                desmosDiv.style.display = 'block';
+                if (!window.calcUnderCurve) {
+                    window.calcUnderCurve = Desmos.GraphingCalculator(desmosDiv, { expressions: false, settingsMenu: false });
+                }
+                
+                // Allow browser to paint the display:block before resizing Desmos
+                setTimeout(() => {
+                    window.calcUnderCurve.resize(); 
+                    
+                    const latexF = cleanTex(node.toTex());
+                    window.calcUnderCurve.setExpression({ id: 'f', latex: 'f(x)=' + latexF, color: '#2c3e50' });
+                    // Double backslashes are REQUIRED inside template literals so Desmos receives valid \le and \{ LaTeX syntax
+                    window.calcUnderCurve.setExpression({ id: 'shade_pos', latex: `0 \\le y \\le f(x) \\{${a} \\le x \\le ${b}\\}`, color: '#3498db' });
+                    window.calcUnderCurve.setExpression({ id: 'shade_neg', latex: `f(x) \\le y \\le 0 \\{${a} \\le x \\le ${b}\\}`, color: '#3498db' });
+                    
+                    // Dynamic Bounds calculation
+                    const rangeX = Math.abs(b - a) || 2;
+                    let vals = [];
+                    for(let i=0; i<=20; i++) {
+                        let sampleX = a + (rangeX * (i/20));
+                        try { vals.push(node.evaluate({x: sampleX})); } catch(e){}
+                    }
+                    let minY = Math.min(0, ...vals);
+                    let maxY = Math.max(0, ...vals);
+                    const rangeY = Math.abs(maxY - minY) || 10;
+
+                    window.calcUnderCurve.setMathBounds({ 
+                        left: a - (rangeX * 0.2) - 1, 
+                        right: b + (rangeX * 0.2) + 1, 
+                        bottom: minY - (rangeY * 0.2) - 1, 
+                        top: maxY + (rangeY * 0.2) + 1 
+                    });
+                }, 100);
+            }
+            
+        } catch(e) {
+            resultDiv.innerHTML = `<div class="error-box">Error: ${e.message}</div>`;
+            resultDiv.style.display = 'block';
+            if (desmosDiv) desmosDiv.style.display = 'none';
+        }
+    }
+
+    function solveAreaBetweenCurves() {
+        const rawFuncFStr = document.getElementById('appFuncTop').value;
+        const rawFuncGStr = document.getElementById('appFuncBottom').value;
+        
+        const funcFStr = rawFuncFStr.replace(/(sin|cos|tan|cot|sec|csc)\s*\^\s*([-\d]+)\s*\(([^)]+)\)/g, '($1($3))^$2').replace(/ln/g, 'log');
+        const funcGStr = rawFuncGStr.replace(/(sin|cos|tan|cot|sec|csc)\s*\^\s*([-\d]+)\s*\(([^)]+)\)/g, '($1($3))^$2').replace(/ln/g, 'log');
+        
+        const aStr = document.getElementById('lowerBoundC').value.replace(/ln/g, 'log');
+        const bStr = document.getElementById('upperBoundC').value.replace(/ln/g, 'log');
+        const resultDiv = document.getElementById('area-curves-result');
+        const desmosDiv = document.getElementById('desmos-between-curves');
+        
+        try {
+            if (!funcFStr || !funcGStr || !aStr || !bStr) throw new Error("Please fill in all fields.");
+            
+            const nodeF = math.parse(funcFStr);
+            const nodeG = math.parse(funcGStr);
+            const combinedStr = `(${funcFStr}) - (${funcGStr})`;
+            const nodeDiff = math.parse(combinedStr);
+            
+            const { finalTerms } = getFullIntegralNodes(combinedStr);
+            let fullIntNode = finalTerms[0];
+            for(let i = 1; i < finalTerms.length; i++) {
+                fullIntNode = new math.OperatorNode('+', 'add', [fullIntNode, finalTerms[i]]);
+            }
+            fullIntNode = safeSimplify(fullIntNode);
+            
+            const a = math.evaluate(aStr);
+            const b = math.evaluate(bStr);
+            
+            const FA = fullIntNode.evaluate({x: a});
+            const FB = fullIntNode.evaluate({x: b});
+            const area = FB - FA;
+            
+            let intTex = cleanTex(fullIntNode.toTex());
+            
+            let html = `
+                <div class="steps-wrapper" style="margin-top: 20px;">
+                    <div class="step-box" style="animation-delay: 0.1s;">
+                        <div class="step-title">Step 1: Difference & Anti-derivative</div>
+                        <div style="font-size: 1.2em;">$\\displaystyle H(x) = \\int \\left[ ${cleanTex(nodeF.toTex())} - (${cleanTex(nodeG.toTex())}) \\right] \\, dx$</div>
+                        <div style="font-size: 1.2em; margin-top: 8px;">$\\displaystyle \\Rightarrow ${intTex}$</div>
+                    </div>
+                    <div class="step-box" style="animation-delay: 0.2s;">
+                        <div class="step-title">Step 2: Evaluate Limits H(b) and H(a)</div>
+                        <div style="font-size: 1.1em; margin-bottom: 8px;">$\\displaystyle H(b) = H(${document.getElementById('upperBoundC').value}) = ${Math.round(FB*10000)/10000}$</div>
+                        <div style="font-size: 1.1em;">$\\displaystyle H(a) = H(${document.getElementById('lowerBoundC').value}) = ${Math.round(FA*10000)/10000}$</div>
+                    </div>
+                    <div class="step-box" style="animation-delay: 0.3s; background: #e8f4f8;">
+                        <div class="step-title" style="color: #2980b9;">Step 3: Calculate Net Area</div>
+                        <div style="font-size: 1.3em; margin-top: 10px;">$\\displaystyle \\text{Area} = H(b) - H(a) = \\mathbf{${Math.round(area*10000)/10000}}$</div>
+                        <div style="font-size: 0.85em; color: #7f8c8d; margin-top: 5px;">* Note: This computes the algebraic difference. If curves cross, finding true physical area requires absolute values.</div>
+                    </div>
+                </div>
+            `;
+            resultDiv.innerHTML = html;
+            resultDiv.style.display = 'block';
+            MathJax.typesetPromise([resultDiv]);
+            
+            // Launch Desmos Chart
+            if (desmosDiv) {
+                desmosDiv.style.display = 'block';
+                if (!window.calcBetweenCurves) {
+                    window.calcBetweenCurves = Desmos.GraphingCalculator(desmosDiv, { expressions: false, settingsMenu: false });
+                }
+                
+                // Allow browser to paint the display:block before resizing Desmos
+                setTimeout(() => {
+                    window.calcBetweenCurves.resize();
+                    
+                    window.calcBetweenCurves.setExpression({ id: 'f', latex: 'f(x)=' + cleanTex(nodeF.toTex()), color: '#2ecc71' });
+                    window.calcBetweenCurves.setExpression({ id: 'g', latex: 'g(x)=' + cleanTex(nodeG.toTex()), color: '#e74c3c' });
+                    window.calcBetweenCurves.setExpression({ id: 'shade_top', latex: `g(x) \\le y \\le f(x) \\{${a} \\le x \\le ${b}\\}`, color: '#9b59b6' });
+                    window.calcBetweenCurves.setExpression({ id: 'shade_bottom', latex: `f(x) \\le y \\le g(x) \\{${a} \\le x \\le ${b}\\}`, color: '#9b59b6' });
+                    
+                    // Dynamic Bounds calculation
+                    const rangeX = Math.abs(b - a) || 2;
+                    let vals = [];
+                    for(let i=0; i<=20; i++) {
+                        let sampleX = a + (rangeX * (i/20));
+                        try { vals.push(nodeF.evaluate({x: sampleX})); } catch(e){}
+                        try { vals.push(nodeG.evaluate({x: sampleX})); } catch(e){}
+                    }
+                    let minY = Math.min(0, ...vals);
+                    let maxY = Math.max(0, ...vals);
+                    const rangeY = Math.abs(maxY - minY) || 10;
+
+                    window.calcBetweenCurves.setMathBounds({ 
+                        left: a - (rangeX * 0.2) - 1, 
+                        right: b + (rangeX * 0.2) + 1, 
+                        bottom: minY - (rangeY * 0.2) - 1, 
+                        top: maxY + (rangeY * 0.2) + 1 
+                    });
+                }, 100);
+            }
+            
+        } catch(e) {
+            resultDiv.innerHTML = `<div class="error-box">Error: ${e.message}</div>`;
+            resultDiv.style.display = 'block';
+        }
+    }
+
+    // ==========================================
+    // 5. SECURITY & PROTECTION
+    // ==========================================
+    
+    // --- SECURITY FIX 2: Domain Lock ---
+    // Change "yourwebsite.com" to your actual domain name. 
+    // "" and "localhost" let you test it on your computer by opening the HTML file directly.
+    const allowedDomains = ["alex-themighty.github.io", "localhost", "127.0.0.1", ""];
+    if (window.location.hostname !== "" && !allowedDomains.includes(window.location.hostname)) {
+        document.body.innerHTML = "<h1 style='text-align:center; margin-top:50px; color:red; font-family:sans-serif;'>Unauthorized Hosting. This tool belongs to Alex Themighty.</h1>";
+        throw new Error("Domain not authorized."); // Kills the rest of the script
+    }
+
+    // --- SECURITY FIX 3: Disable Right-Click and F12 ---
+    document.addEventListener('contextmenu', event => event.preventDefault());
+    document.addEventListener('keydown', event => {
+        if (
+            event.key === 'F12' || 
+            (event.ctrlKey && event.shiftKey && (event.key === 'I' || event.key === 'i')) || 
+            (event.ctrlKey && event.shiftKey && (event.key === 'J' || event.key === 'j')) || 
+            (event.ctrlKey && (event.key === 'U' || event.key === 'u'))
+        ) {
+            event.preventDefault();
+        }
+    });
+</script>
+</body>
+</html>
