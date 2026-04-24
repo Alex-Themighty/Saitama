@@ -326,95 +326,78 @@
     </div>
 
     <script>
-        // ==========================================
-        // 1. SECURITY & UI PROTECTION (disabled for debugging)
-        // ==========================================
-        // UI blocking code removed to allow DevTools during local testing.
-
-        // ==========================================
-        // 2. LOGIC & API INTERACTION
-        // ==========================================
-        // WARNING: Client-side keys are insecure. Use only for quick local testing.
-        // Replace with a rotated key after verification.
-        const apiKey = "AIzaSyDDr8njIzZONkqcGaoTxXHKUAtBbJ9aEw0";
-        console.warn('Using client-side API key for testing. Rotate the key immediately after verification.');
+        // REPLACE THIS WITH YOUR REAL KEY FROM GOOGLE AI STUDIO
+        const apiKey = "AIzaSyDDr8njIzZONkqcGaoTxXHKUAtBbJ9aEw0"; 
+        
         let base64Image = null;
         let analyzedData = null;
 
-        const questionInput = document.getElementById('question-input');
-        const imageUpload = document.getElementById('image-upload');
-        const imagePreviewContainer = document.getElementById('image-preview-container');
-        const imagePreview = document.getElementById('image-preview');
-
-        questionInput.addEventListener('paste', e => {
-            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-            for (const item of items) {
-                if (item.type.indexOf('image') !== -1) {
-                    const reader = new FileReader();
-                    reader.onload = event => handleImageResult(event.target.result);
-                    reader.readAsDataURL(item.getAsFile());
-                }
-            }
-        });
-
-        imageUpload.addEventListener('change', e => {
+        document.getElementById('image-upload').addEventListener('change', e => {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = event => handleImageResult(event.target.result);
+                reader.onload = event => {
+                    document.getElementById('image-preview').src = event.target.result;
+                    document.getElementById('image-preview-container').style.display = 'block';
+                    base64Image = event.target.result.split(',')[1];
+                };
                 reader.readAsDataURL(file);
             }
         });
 
-        function handleImageResult(dataUrl) {
-            imagePreview.src = dataUrl;
-            imagePreviewContainer.style.display = 'block';
-            base64Image = dataUrl.split(',')[1];
-        }
-
-        function clearImage() {
-            base64Image = null;
-            imagePreview.src = "";
-            imagePreviewContainer.style.display = 'none';
-        }
-
         async function analyzeProblem() {
-            const textInput = questionInput.value;
+            const textInput = document.getElementById('question-input').value;
             const loader = document.getElementById('loader');
             const errorMsg = document.getElementById('error-msg');
             const analyzeBtn = document.getElementById('analyze-btn');
-            const analysisSection = document.getElementById('analysis-section');
             
             if (!textInput.trim() && !base64Image) return;
 
             errorMsg.style.display = 'none';
-            analysisSection.style.display = 'none';
             loader.style.display = 'block';
             analyzeBtn.disabled = true;
 
-            const systemPrompt = `You are an expert Math tutor. Analyze probability problems (Binomial, Poisson, Geometric, Hypergeometric, or Normal). 
-            Return JSON only: { "distribution_type": "...", "distribution_quote": "...", "global_givens": [{"name": "...", "value": "..."}], "parts": [{"id": "a", "label": "...", "goal": "..."}] }`;
-
             const payload = {
-                contents: [{ role: "user", parts: [] }],
-                systemInstruction: { parts: [{ text: systemPrompt }] },
-                generationConfig: { responseMimeType: "application/json" }
+                contents: [{ 
+                    role: "user", 
+                    parts: [
+                        { text: "Identify the probability distribution and parameters. Return ONLY JSON: {\"distribution_type\": \"Binomial\", \"global_givens\": [{\"name\": \"n\", \"value\": \"10\"}]}" }, 
+                        { text: textInput }
+                    ] 
+                }]
             };
 
-            if (textInput.trim()) payload.contents[0].parts.push({ text: textInput });
-            if (base64Image) payload.contents[0].parts.push({ inlineData: { mimeType: "image/jpeg", data: base64Image } });
+            if (base64Image) {
+                payload.contents[0].parts.push({ inlineData: { mimeType: "image/png", data: base64Image } });
+            }
 
             try {
-                const responseData = await fetchWithRetry(payload);
-                analyzedData = JSON.parse(responseData.candidates[0].content.parts[0].text);
-                displayResults(analyzedData);
+                const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                
+                if (!response.ok) throw new Error(result.error?.message || "Invalid API Key");
+
+                const rawAiText = result.candidates[0].content.parts[0].text;
+                const cleanJson = rawAiText.replace(/```json|```/g, "").trim();
+                analyzedData = JSON.parse(cleanJson);
+                
+                document.getElementById('dist-type').innerText = analyzedData.distribution_type;
+                document.getElementById('params-table').innerHTML = (analyzedData.global_givens || []).map(g => 
+                    `<tr><td style="padding:10px; border-bottom:1px solid #333;"><b>${g.name}</b></td><td style="padding:10px; border-bottom:1px solid #333;">${g.value}</td></tr>`
+                ).join('');
+                
+                document.getElementById('analysis-section').style.display = 'block';
                 sessionStorage.setItem('probTransferData', JSON.stringify(analyzedData));
-            } catch (error) {
-                console.error('Analyze error:', error);
-                let message = 'Analysis failed.';
-                if (error && error.message) message += ' ' + error.message;
-                if (error && error.responseText) message += ' Response: ' + String(error.responseText).slice(0,1000);
-                errorMsg.innerText = message;
+
+            } catch (err) {
+                errorMsg.innerHTML = `<strong>API Error:</strong> ${err.message}`;
                 errorMsg.style.display = 'block';
             } finally {
                 loader.style.display = 'none';
@@ -422,140 +405,10 @@
             }
         }
 
-        // Pick a supported model dynamically by calling ListModels. This
-        // avoids hardcoding a model name that may be removed or not available
-        // for your project. The function prefers a model that supports image
-        // input and the `generateContent` method.
-        let _selectedModelId = null;
-        async function selectModel() {
-            if (_selectedModelId) return _selectedModelId;
-            if (!apiKey) throw new Error('API key not set');
-            const listUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
-            try {
-                const res = await fetch(listUrl);
-                if (!res.ok) {
-                    const txt = await res.text().catch(() => '');
-                    throw new Error(`ListModels failed: ${res.status} ${res.statusText} ${txt}`);
-                }
-                const json = await res.json().catch(() => null);
-                const models = (json && (json.models || json.model || [])) || [];
-                // Helper to normalise name -> id
-                function idFromName(name) {
-                    if (!name) return null;
-                    return name.replace(/^models\//, '');
-                }
-
-                // Prefer image-capable models that support generateContent
-                for (const m of models) {
-                    const name = m.name || m.model || m.id;
-                    const methods = (m.supportedMethods || m.methods || []).map(x => String(x).toLowerCase());
-                    const modalities = (m.inputModalities || m.input_modalities || []).map(x => String(x).toLowerCase());
-                    if (methods.includes('generatecontent') && modalities.includes('image')) {
-                        _selectedModelId = idFromName(name);
-                        return _selectedModelId;
-                    }
-                }
-
-                // Fallback: any model that supports generateContent
-                for (const m of models) {
-                    const name = m.name || m.model || m.id;
-                    const methods = (m.supportedMethods || m.methods || []).map(x => String(x).toLowerCase());
-                    if (methods.includes('generatecontent')) {
-                        _selectedModelId = idFromName(name);
-                        return _selectedModelId;
-                    }
-                }
-
-                // Nothing found
-                return null;
-            } catch (e) {
-                console.warn('selectModel error', e);
-                return null;
-            }
-        }
-
-        async function fetchWithRetry(payload, retries = 5) {
-            const modelId = await selectModel();
-            if (!modelId) throw new Error('No supported model found for generateContent; check your project and API availability.');
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`;
-            console.info('Sending API request to', url);
-            try { console.debug('Payload (trimmed):', JSON.stringify(payload).slice(0,2000)); } catch (e) {}
-
-            let delay = 1000;
-            for (let i = 0; i < retries; i++) {
-                try {
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                    const raw = await response.text().catch(() => null);
-                    if (!response.ok) {
-                        const err = new Error(`HTTP ${response.status} ${response.statusText}`);
-                        err.status = response.status;
-                        err.responseText = raw;
-                        console.error('API returned error:', err.status, raw);
-                        throw err;
-                    }
-                    try {
-                        return JSON.parse(raw);
-                    } catch (parseErr) {
-                        const err = new Error('Invalid JSON in API response');
-                        err.responseText = raw;
-                        console.error('Failed to parse JSON response:', raw);
-                        throw err;
-                    }
-                } catch (e) {
-                    if (i === retries - 1) throw e;
-                    await new Promise(res => setTimeout(res, delay));
-                    delay *= 2;
-                }
-            }
-        }
-
-        function displayResults(data) {
-            document.getElementById('dist-type').innerText = data.distribution_type;
-            document.getElementById('dist-quote').innerText = `"${data.distribution_quote || 'Criteria met for this distribution.'}"`;
-            
-            const tbody = document.getElementById('params-table');
-            tbody.innerHTML = '';
-            if (data.global_givens) {
-                data.global_givens.forEach(g => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `<td><strong>${g.name}</strong></td><td>${g.value}</td>`;
-                    tbody.appendChild(tr);
-                });
-            }
-
-            const unknownContainer = document.getElementById('unknowns-container');
-            unknownContainer.innerHTML = '';
-            if (data.parts) {
-                data.parts.forEach(p => {
-                    const div = document.createElement('div');
-                    div.className = 'unknown-item';
-                    div.innerHTML = `
-                        <div><span class="unknown-id">${p.id}.</span> <span>${p.label}</span></div>
-                        <span class="goal-text">Goal: ${p.goal}</span>
-                    `;
-                    unknownContainer.appendChild(div);
-                });
-            }
-
-            document.getElementById('analysis-section').style.display = 'block';
-            if (window.MathJax) MathJax.typesetPromise();
-        }
-
         function goToSolver() {
             if (!analyzedData) return;
-            const dist = analyzedData.distribution_type.toLowerCase();
-            const solverMap = {
-                'binomial': 'prob-binomial.html',
-                'poisson': 'prob-poison.html',
-                'geometric': 'prob-geometric.html',
-                'hypergeometric': 'prob-hypergeometric.html',
-                'normal': 'prob-normal.html'
-            };
-            window.location.href = solverMap[dist] || 'probability.html';
+            // No leading slash for GitHub Pages compatibility
+            window.location.href = "binomial.html"; 
         }
     </script>
 </body>
