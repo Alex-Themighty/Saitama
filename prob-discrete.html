@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Discrete Random Variables Solver</title>
+    
+    <!-- MathJax Configuration for scaling math symbols by 30% -->
+    <script>
+        MathJax = {
+            chtml: {
+                scale: 1.3
+            }
+        };
+    </script>
+
+    <!-- MathJax for rendering beautiful math formulas -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <!-- Nerdamer CAS for algebraic parsing and equation solving -->
+    <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/nerdamer.core.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Algebra.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Calculus.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Solve.js"></script>
+
+    <!-- External Stylesheet Reference -->
+    <link rel="stylesheet" href="css/style.css">    
+
+	<style>
+        
+
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #f8fafc;
+            --text: #1e293b;
+            --border: #cbd5e1;
+            --success: #059669;
+        }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: var(--bg);
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        h1, h2, h3 { color: var(--primary); }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            margin-bottom: 2rem;
+        }
+        .info-box {
+            background-color: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 4px 4px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.75rem;
+        }
+        th { background-color: #f1f5f9; }
+        input[type="text"] {
+            width: 80px;
+            padding: 0.5rem;
+            text-align: center;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        input[type="text"]:focus {
+            outline: 2px solid var(--primary);
+            border-color: transparent;
+        }
+        .controls {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        button:hover { background-color: var(--primary-hover); }
+        .conditional-inputs {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f1f5f9;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        select {
+            padding: 0.5rem;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+        #results {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border: 2px dashed var(--success);
+            border-radius: 4px;
+            background-color: #f0fdf4;
+            display: none;
+            overflow-x: auto;
+        }
+        .error { color: #dc2626; font-weight: bold; }
+        code { background: #e2e8f0; padding: 2px 6px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <nav class="master-nav">
+        <div class="nav-container-tier-1">
+            
+            <!-- CALCULUS Section -->
+            <div class="header-group">
+                <a href="calculus.html#diff-theory" class="category-title title-calculus">CALCULUS</a>
+                <div class="header-links">
+                    <div class="main-link">
+                        <a href="calculus.html#diff-theory" class="nav-label">DIFFERENTIATION</a>
+                        <div class="sub-nav">
+                            <a href="calculus.html#diff-theory">THEORY</a>
+                            <a href="calculus.html#diff-app">APPLICATION</a>
+                        </div>
+                    </div>
+                    <div class="main-link">
+                        <a href="calculus.html#int-theory" class="nav-label">INTEGRATION</a>
+                        <div class="sub-nav">
+                            <a href="calculus.html#int-theory">THEORY</a>
+                            <a href="calculus.html#int-app">APPLICATION</a>
+                            <a href="calculus.html#int-future">FUTURE CONCEPT</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Central Logo -->
+            <a href="index.html" class="logo-link">
+                <img src="assets/logo.svg" class="nav-logo" alt="Masterclass Logo" onerror="this.src='https://via.placeholder.com/40x40?text=M'">
+            </a>
+
+            <!-- PROBABILITY Section -->
+            <div class="header-group">
+                <a href="prob-homepage.html" class="category-title title-prob">PROBABILITY</a>
+                <div class="header-links">
+                    <div class="main-link">
+                        <span class="nav-label">DISCRETE<br>DISTRIBUTION</span>
+                        <div class="sub-nav">
+                            <a href="prob-discrete.html">GENERAL DISCRETE PROBLEM</a>
+                            <a href="prob-binomial.html">BINOMIAL DISTRIBUTION</a>
+                            <a href="prob-poisson.html">POISSON DISTRIBUTION</a>
+                            <a href="prob-geometric.html">GEOMETRIC DISTRIBUTION</a>
+                            <a href="prob-hyper.html">HYPERGEOMETRIC DISTRIBUTION</a>
+                        </div>
+                    </div>
+                    
+                    <div class="main-link">
+                        <span class="nav-label">CONTINUOUS<br>DISTRIBUTION</span>
+                        <div class="sub-nav">
+                            <a href="prob-normal.html">NORMAL DISTRIBUTION</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </nav>
+
+    <h1>General Discrete Masterclass</h1>
+    <p  class="developer-credit">Developed by Alex Themighty for EDUCATION purposes.</p>
+
+    <div class="container">
+        <h2>Interactive Solver</h2>
+        <div class="info-box">
+            <strong>Algebra Engine Active:</strong> The fields below support advanced math expressions! 
+            You can type formulas like: <code>a</code>, <code>2a</code>, <code>a/2</code>, <code>(2a-0.1)</code>, <code>a^2</code>, or <code>sqrt(a)</code>.
+        </div>
+        
+        <table id="distTable">
+            <thead>
+                <tr>
+                    <th>\( x \)</th>
+                    <td><input type="text" id="x0" value="0"></td>
+                    <td><input type="text" id="x1" value="1"></td>
+                    <td><input type="text" id="x2" value="2"></td>
+                    <td><input type="text" id="x3" value="3"></td>
+                    <td><input type="text" id="x4" value="4"></td>
+                    <td><input type="text" id="x5" value="5"></td>
+                </tr>
+                <tr>
+                    <th>\( Pr(X = x) \)</th>
+                    <td><input type="text" id="p0" value="0.05"></td>
+                    <td><input type="text" id="p1" value="0.1"></td>
+                    <td><input type="text" id="p2" value="0.3"></td>
+                    <td><input type="text" id="p3" value="a^2"></td>
+                    <td><input type="text" id="p4" value="0.2"></td>
+                    <td><input type="text" id="p5" value="sqrt(a)/2"></td>
+                </tr>
+            </thead>
+        </table>
+
+        <div class="controls">
+            <button onclick="solveUnknown()">1. Find Unknown Variable</button>
+            <button onclick="solveExpectedValue()">2. Calculate Expected Value E(X)</button>
+        </div>
+
+        <div class="conditional-inputs">
+            <strong>3. Conditional Probability:</strong> 
+            <span>Pr ( X</span>
+            <select id="op1">
+                <option value="<">&lt;</option>
+                <option value="<=" selected>&le;</option>
+                <option value="=">=</option>
+                <option value=">">&gt;</option>
+                <option value=">=">&ge;</option>
+            </select>
+            <input type="text" id="val1" value="4" style="width: 50px;">
+            <span> | X </span>
+            <select id="op2">
+                <option value="<">&lt;</option>
+                <option value="<=">&le;</option>
+                <option value="=">=</option>
+                <option value=">" selected>&gt;</option>
+                <option value=">=">&ge;</option>
+            </select>
+            <input type="text" id="val2" value="1" style="width: 50px;">
+            <span>)</span>
+            <button onclick="solveConditional()">Calculate</button>
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // Store solved variable state to pass between functions
+        window.solvedVar = null;
+
+        // Reset solved state if the user changes any input
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', () => {
+                window.solvedVar = null;
+                document.getElementById('results').style.display = 'none';
+            });
+        });
+
+        function getParsedData() {
+            let xVals = [];
+            let pExprs = [];
+            let vars = new Set();
+
+            for (let i = 0; i < 6; i++) {
+                let xStr = document.getElementById(`x${i}`).value.trim() || '0';
+                let pStr = document.getElementById(`p${i}`).value.trim() || '0';
+                
+                // Evaluate X values immediately (they usually shouldn't have variables)
+                xVals.push(parseFloat(nerdamer(xStr).evaluate().text()));
+                pExprs.push(pStr);
+
+                // Detect variables in probabilities
+                let extractedVars = nerdamer(pStr).variables();
+                extractedVars.forEach(v => vars.add(v));
+            }
+
+            return { xVals, pExprs, vars: Array.from(vars) };
+        }
+
+        function showResult(html) {
+            const resDiv = document.getElementById('results');
+            resDiv.style.display = 'block';
+            resDiv.innerHTML = html;
+            MathJax.typesetPromise([resDiv]);
+        }
+
+        function solveUnknown() {
+            try {
+                const { pExprs, vars } = getParsedData();
+                
+                if (vars.length === 0) {
+                    let sumExpr = nerdamer(pExprs.map(p => `(${p})`).join(' + ')).evaluate();
+                    showResult(`Sum of probabilities is \\( \\mathbf{${sumExpr.toTeX()}} \\). No unknown variables found to solve for.`);
+                    return;
+                }
+
+                if (vars.length > 1) {
+                    showResult(`<span class="error">Error: Too many unknown variables (${vars.join(', ')}). Please only use one variable (e.g., 'a').</span>`);
+                    return;
+                }
+
+                let unknownVar = vars[0];
+                let sumExpr = pExprs.map(p => `(${p})`).join(' + ');
+                let equation = `${sumExpr} = 1`;
+
+                // Use Nerdamer to solve the algebraic equation algebraically
+                let solutions = nerdamer.solveEquations(equation, unknownVar);
+                
+                // Filter solutions to ensure they result in valid probabilities (between 0 and 1)
+                let validRoots = [];
+                for (let sol of solutions) {
+                    let numSol = parseFloat(nerdamer(sol).evaluate().text());
+                    
+                    // Ignore imaginary numbers or NaN
+                    if (isNaN(numSol)) continue;
+
+                    let isValid = true;
+                    for (let p of pExprs) {
+                        let pVal = parseFloat(nerdamer(p, {[unknownVar]: numSol}).evaluate().text());
+                        // Due to JS floating point precision, allow a tiny margin of error
+                        if (pVal < -1e-7 || pVal > 1 + 1e-7 || isNaN(pVal)) {
+                            isValid = false;
+                            break;
+                        }
+                    }
+
+                    // Check if total sum equals 1
+                    let sumCheck = parseFloat(nerdamer(sumExpr, {[unknownVar]: numSol}).evaluate().text());
+                    if (Math.abs(sumCheck - 1) > 1e-5) isValid = false;
+
+                    if (isValid) {
+                        validRoots.push({
+                            exact: nerdamer(sol).evaluate().text(),
+                            numeric: numSol,
+                            tex: nerdamer(sol).evaluate().toTeX()
+                        });
+                    }
+                }
+
+                if (validRoots.length === 0) {
+                    showResult(`<span class="error">Found mathematical solutions, but none are valid probabilities. Check your inputs (Probabilities must be between 0 and 1).</span>`);
+                    return;
+                }
+
+                // Keep the first valid root's EXACT value for subsequent calculations
+                window.solvedVar = { name: unknownVar, value: validRoots[0].exact };
+
+                let steps = `<h3>Finding Unknown '${unknownVar}'</h3>`;
+                steps += `<p>According to the Law of Total Probability: \\( \\sum Pr(X = x) = 1 \\)</p>`;
+                
+                // Format nicely using Nerdamer's LaTeX exporter
+                let texEq = nerdamer(sumExpr).toTeX();
+                steps += `<p>\\( ${texEq} = 1 \\)</p>`;
+                
+                if (validRoots.length === 1) {
+                    steps += `<p>Solving for ${unknownVar} yields: \\( ${unknownVar} = \\mathbf{${validRoots[0].tex}} \\)</p>`;
+                } else {
+                    let rootsTex = validRoots.map(r => r.tex).join(', ');
+                    steps += `<p>Solving for ${unknownVar} gives multiple valid roots: \\( ${unknownVar} = \\mathbf{${rootsTex}} \\)</p>`;
+                    steps += `<p><em>Automatically using \\( ${validRoots[0].tex} \\) for further calculations.</em></p>`;
+                }
+
+                // Show what the individual probabilities become
+                steps += `<h4>Substituted Probabilities:</h4><ul>`;
+                for (let i = 0; i < pExprs.length; i++) {
+                    if (nerdamer(pExprs[i]).variables().includes(unknownVar)) {
+                        let exactP = nerdamer(pExprs[i], {[unknownVar]: validRoots[0].exact}).evaluate();
+                        steps += `<li>\\( Pr(X=${i}) = ${nerdamer(pExprs[i]).toTeX()} = \\mathbf{${exactP.toTeX()}} \\)</li>`;
+                    }
+                }
+                steps += `</ul>`;
+
+                showResult(steps);
+
+            } catch (err) {
+                showResult(`<span class="error">Error parsing expressions. Please check your math syntax. Details: ${err.message}</span>`);
+            }
+        }
+
+        function solveExpectedValue() {
+            try {
+                const { xVals, pExprs, vars } = getParsedData();
+                let subMap = {};
+                
+                if (vars.length > 0) {
+                    if (!window.solvedVar || window.solvedVar.name !== vars[0]) {
+                        showResult(`<span class="error">Variables detected. Please solve for the unknown variable first by clicking '1. Find Unknown Variable'.</span>`);
+                        return;
+                    }
+                    subMap[window.solvedVar.name] = window.solvedVar.value;
+                }
+
+                let evExact = nerdamer('0');
+                let equationTex = "";
+                
+                for (let i = 0; i < xVals.length; i++) {
+                    let pExact = nerdamer(pExprs[i], subMap).evaluate();
+                    let term = nerdamer(`(${xVals[i]}) * (${pExact.text()})`).evaluate();
+                    evExact = nerdamer(`(${evExact.text()}) + (${term.text()})`).evaluate();
+                    
+                    equationTex += `(${xVals[i]} \\times ${pExact.toTeX()})`;
+                    if (i < xVals.length - 1) equationTex += " + ";
+                }
+
+                let steps = `<h3>Expected Value E(X)</h3>`;
+                steps += `<p>\\( E(X) = \\sum [x \\cdot Pr(X=x)] \\)</p>`;
+                steps += `<p>\\( E(X) = ${equationTex} \\)</p>`;
+                steps += `<p>\\( E(X) = \\mathbf{${evExact.toTeX()}} \\)</p>`;
+
+                showResult(steps);
+            } catch (err) {
+                showResult(`<span class="error">Error calculating Expected Value: ${err.message}</span>`);
+            }
+        }
+
+        function evaluateCondition(x, op, val) {
+            switch(op) {
+                case '<': return x < val;
+                case '<=': return x <= val;
+                case '=': return x === val;
+                case '>': return x > val;
+                case '>=': return x >= val;
+            }
+        }
+
+        function solveConditional() {
+             try {
+                const { xVals, pExprs, vars } = getParsedData();
+                let subMap = {};
+                
+                if (vars.length > 0) {
+                    if (!window.solvedVar || window.solvedVar.name !== vars[0]) {
+                         showResult(`<span class="error">Variables detected. Please solve for the unknown variable first by clicking '1. Find Unknown Variable'.</span>`);
+                        return;
+                    }
+                    subMap[window.solvedVar.name] = window.solvedVar.value;
+                }
+
+                const op1 = document.getElementById('op1').value;
+                const val1Str = document.getElementById('val1').value;
+                const val1 = parseFloat(nerdamer(val1Str).evaluate().text());
+                
+                const op2 = document.getElementById('op2').value;
+                const val2Str = document.getElementById('val2').value;
+                const val2 = parseFloat(nerdamer(val2Str).evaluate().text());
+
+                // Map standard operators to their LaTeX equivalents for beautiful rendering
+                const opToTex = {
+                    '<': '<',
+                    '<=': '\\le',
+                    '=': '=',
+                    '>': '>',
+                    '>=': '\\ge'
+                };
+                const texOp1 = opToTex[op1];
+                const texOp2 = opToTex[op2];
+
+                let probBExact = nerdamer('0'); 
+                let probAandBExact = nerdamer('0'); 
+                let bOutcomes = [];
+                let aAndBOutcomes = [];
+
+                for (let i = 0; i < xVals.length; i++) {
+                    let x = xVals[i];
+                    let pExact = nerdamer(pExprs[i], subMap).evaluate();
+
+                    let conditionB = evaluateCondition(x, op2, val2);
+                    let conditionA = evaluateCondition(x, op1, val1);
+
+                    if (conditionB) {
+                        probBExact = nerdamer(`(${probBExact.text()}) + (${pExact.text()})`).evaluate();
+                        bOutcomes.push(x);
+                        if (conditionA) {
+                            probAandBExact = nerdamer(`(${probAandBExact.text()}) + (${pExact.text()})`).evaluate();
+                            aAndBOutcomes.push(x);
+                        }
+                    }
+                }
+
+                let isDenominatorZero = parseFloat(probBExact.text()) === 0;
+                let finalResultTex = isDenominatorZero ? "\\text{Undefined (Division by zero)}" : nerdamer(`(${probAandBExact.text()}) / (${probBExact.text()})`).evaluate().toTeX();
+
+                let steps = `<h3>Conditional Probability</h3>`;
+                steps += `<p>Finding \\( Pr(X ${texOp1} ${val1} \\mid X ${texOp2} ${val2}) \\)</p>`;
+                
+                steps += `<h4>1. Find Denominator: \\( Pr(X ${texOp2} ${val2}) \\)</h4>`;
+                steps += `<p>Valid \\(x\\) values: \\{${bOutcomes.join(', ')}\\}</p>`;
+                steps += `<p>Sum of probabilities = \\( ${probBExact.toTeX()} \\)</p>`;
+
+                steps += `<h4>2. Find Numerator: \\( Pr(X ${texOp1} ${val1} \\cap X ${texOp2} ${val2}) \\)</h4>`;
+                steps += `<p>Valid \\(x\\) values that satisfy BOTH conditions: \\{${aAndBOutcomes.join(', ')}\\}</p>`;
+                steps += `<p>Sum of probabilities = \\( ${probAandBExact.toTeX()} \\)</p>`;
+
+                steps += `<h4>3. Divide Result</h4>`;
+                steps += `<p>\\( \\frac{${probAandBExact.toTeX()}}{${probBExact.toTeX()}} = \\mathbf{${finalResultTex}} \\)</p>`;
+
+                showResult(steps);
+            } catch(err) {
+                 showResult(`<span class="error">Error calculating conditional probability: ${err.message}</span>`);
+            }
+        }
+    </script>
+</body>
+</html>

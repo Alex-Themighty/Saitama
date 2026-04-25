@@ -52,42 +52,7 @@
         /* =========================================
            TYPOGRAPHY & HEADINGS
         ========================================= */
-        h1 {
-            text-align: center;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 2.8em;
-            background: linear-gradient(to right, #2c3e50, #3498db);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-            font-weight: 800;
-            letter-spacing: -1px;
-        }
-        h2, h3 { text-align: center; color: #2c3e50; }
-        
-        .credit-line, .developer-credit {
-            text-align: center;
-            color: #7f3e8f;
-            font-size: 0.9em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 0;
-            margin-bottom: 30px;
-            font-weight: 600;
-        }
 
-        .section-title {
-            font-family: 'Roboto Slab', serif;
-            text-transform: uppercase;
-            font-size: 1.8em;
-            background: linear-gradient(to right, #2980b9, #8e44ad);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            border-bottom: 2px solid #e1e8ed;
-            padding-bottom: 10px;
-            margin-top: 0;
-            margin-bottom: 20px;
-        }
 
         /* =========================================
            PAGE VIEWS & TABS
@@ -226,8 +191,7 @@
     </style>
 </head>
 <body>
-
-<!-- Navigation Bar -->
+<!-- Navigation Bar Restored -->
 <nav class="master-nav">
     <div class="nav-container-tier-1">
         
@@ -236,18 +200,18 @@
             <a href="calculus.html#diff-theory" class="category-title title-calculus">CALCULUS</a>
             <div class="header-links">
                 <div class="main-link">
-                    <a href="#diff-theory" class="nav-label">DIFFERENTIATION</a>
+                    <a href="calculus.html#diff-theory" class="nav-label">DIFFERENTIATION</a>
                     <div class="sub-nav">
-                        <a href="#diff-theory">THEORY</a>
-                        <a href="#diff-app">APPLICATION</a>
+                        <a href="calculus.html#diff-theory">THEORY</a>
+                        <a href="calculus.html#diff-app">APPLICATION</a>
                     </div>
                 </div>
                 <div class="main-link">
-                    <a href="#int-theory" class="nav-label">INTEGRATION</a>
+                    <a href="calculus.html#int-theory" class="nav-label">INTEGRATION</a>
                     <div class="sub-nav">
-                        <a href="#int-theory">THEORY</a>
-                        <a href="#int-app">APPLICATION</a>
-                        <a href="#int-future">FUTURE CONCEPT</a>
+                        <a href="calculus.html#int-theory">THEORY</a>
+                        <a href="calculus.html#int-app">APPLICATION</a>
+                        <a href="calculus.html#int-future">FUTURE CONCEPT</a>
                     </div>
                 </div>
             </div>
@@ -255,7 +219,7 @@
 
         <!-- Central Logo -->
         <a href="index.html" class="logo-link">
-            <img src="assets/logo.svg" class="nav-logo" alt="Masterclass Logo">
+            <img src="assets/logo.svg" class="nav-logo" alt="Masterclass Logo" onerror="this.src='https://via.placeholder.com/40x40?text=M'">
         </a>
 
         <!-- PROBABILITY Section -->
@@ -265,17 +229,18 @@
                 <div class="main-link">
                     <span class="nav-label">DISCRETE<br>DISTRIBUTION</span>
                     <div class="sub-nav">
-                        <a href="#prob-placeholder">BINOMIAL DISTRIBUTION</a>
-                        <a href="#prob-placeholder">POISSON DISTRIBUTION</a>
-                        <a href="#prob-placeholder">GEOMETRIC DISTRIBUTION</a>
-                        <a href="#prob-placeholder">HYPERGEOMETRIC DISTRIBUTION</a>
+                        <a href="prob-discrete.html">GENERAL DISCRETE PROBLEM</a>
+			<a href="prob-binomial.html">BINOMIAL DISTRIBUTION</a>
+                        <a href="prob-poisson.html">POISSON DISTRIBUTION</a>
+                        <a href="prob-geometric.html">GEOMETRIC DISTRIBUTION</a>
+                        <a href="prob-hyper.html">HYPERGEOMETRIC DISTRIBUTION</a>
                     </div>
                 </div>
                 
                 <div class="main-link">
                     <span class="nav-label">CONTINUOUS<br>DISTRIBUTION</span>
                     <div class="sub-nav">
-                        <a href="#prob-placeholder">NORMAL DISTRIBUTION</a>
+                        <a href="prob-normal.html">NORMAL DISTRIBUTION</a>
                     </div>
                 </div>
             </div>
