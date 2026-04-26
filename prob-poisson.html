@@ -564,6 +564,19 @@
         document.getElementById('analyze-btn').style.display = 'none'; // Hide button after clicking
         MathJax.typesetPromise();
     }
+ 
+    // --- SECURITY FIX 3: Disable Right-Click and F12 ---
+    document.addEventListener('contextmenu', event => event.preventDefault());
+    document.addEventListener('keydown', event => {
+        if (
+            event.key === 'F12' || 
+            (event.ctrlKey && event.shiftKey && (event.key === 'I' || event.key === 'i')) || 
+            (event.ctrlKey && event.shiftKey && (event.key === 'J' || event.key === 'j')) || 
+            (event.ctrlKey && (event.key === 'U' || event.key === 'u'))
+        ) {
+            event.preventDefault();
+        }
+    });   
 </script>
 
 </body>
