@@ -47,14 +47,7 @@
             margin: 0 auto;
             padding: 2rem;
         }
-        h1, h2, h3 { color: var(--primary); }
-        .container {
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            margin-bottom: 2rem;
-        }
+
         .info-box {
             background-color: #fef3c7;
             border-left: 4px solid #f59e0b;
@@ -193,6 +186,7 @@
     <h1>General Discrete Masterclass</h1>
     <p  class="developer-credit">Developed by Alex Themighty for EDUCATION purposes.</p>
 
+
     <div class="container">
         <h2>Interactive Solver</h2>
         <div class="info-box">
@@ -200,9 +194,13 @@
             You can type formulas like: <code>a</code>, <code>2a</code>, <code>a/2</code>, <code>(2a-0.1)</code>, <code>a^2</code>, or <code>sqrt(a)</code>.
         </div>
         
+        <div style="display: flex; justify-content: flex-end; margin-bottom: -1rem;">
+            <button onclick="addColumn()" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; background-color: #64748b;">+ Add Column</button>
+        </div>
+        <div style="overflow-x: auto; padding-bottom: 0.5rem;">
         <table id="distTable">
             <thead>
-                <tr>
+                <tr id="xRow">
                     <th>\( x \)</th>
                     <td><input type="text" id="x0" value="0"></td>
                     <td><input type="text" id="x1" value="1"></td>
@@ -211,7 +209,7 @@
                     <td><input type="text" id="x4" value="4"></td>
                     <td><input type="text" id="x5" value="5"></td>
                 </tr>
-                <tr>
+                <tr id="pRow">
                     <th>\( Pr(X = x) \)</th>
                     <td><input type="text" id="p0" value="0.05"></td>
                     <td><input type="text" id="p1" value="0.1"></td>
@@ -222,6 +220,7 @@
                 </tr>
             </thead>
         </table>
+        </div>
 
         <div class="controls">
             <button onclick="solveUnknown()">1. Find Unknown Variable</button>
@@ -258,6 +257,7 @@
     <script>
         // Store solved variable state to pass between functions
         window.solvedVar = null;
+        let colCount = 6; // Keep track of dynamically added columns
 
         // Reset solved state if the user changes any input
         document.querySelectorAll('input').forEach(input => {
@@ -267,12 +267,45 @@
             });
         });
 
+        function addColumn() {
+            const xRow = document.getElementById('xRow');
+            const pRow = document.getElementById('pRow');
+
+            // Create new x cell
+            const xCell = document.createElement('td');
+            const xInput = document.createElement('input');
+            xInput.type = 'text';
+            xInput.id = `x${colCount}`;
+            xInput.value = colCount;
+            xInput.addEventListener('input', () => {
+                window.solvedVar = null;
+                document.getElementById('results').style.display = 'none';
+            });
+            xCell.appendChild(xInput);
+            xRow.appendChild(xCell);
+
+            // Create new p cell
+            const pCell = document.createElement('td');
+            const pInput = document.createElement('input');
+            pInput.type = 'text';
+            pInput.id = `p${colCount}`;
+            pInput.value = '0'; // Default new probability to 0
+            pInput.addEventListener('input', () => {
+                window.solvedVar = null;
+                document.getElementById('results').style.display = 'none';
+            });
+            pCell.appendChild(pInput);
+            pRow.appendChild(pCell);
+
+            colCount++;
+        }
+
         function getParsedData() {
             let xVals = [];
             let pExprs = [];
             let vars = new Set();
 
-            for (let i = 0; i < 6; i++) {
+            for (let i = 0; i < colCount; i++) {
                 let xStr = document.getElementById(`x${i}`).value.trim() || '0';
                 let pStr = document.getElementById(`p${i}`).value.trim() || '0';
                 
@@ -510,18 +543,6 @@
                  showResult(`<span class="error">Error calculating conditional probability: ${err.message}</span>`);
             }
         }
-		    // --- SECURITY FIX 3: Disable Right-Click and F12 ---
-    document.addEventListener('contextmenu', event => event.preventDefault());
-    document.addEventListener('keydown', event => {
-        if (
-            event.key === 'F12' || 
-            (event.ctrlKey && event.shiftKey && (event.key === 'I' || event.key === 'i')) || 
-            (event.ctrlKey && event.shiftKey && (event.key === 'J' || event.key === 'j')) || 
-            (event.ctrlKey && (event.key === 'U' || event.key === 'u'))
-        ) {
-            event.preventDefault();
-        }
-    });  
     </script>
 </body>
 </html>
