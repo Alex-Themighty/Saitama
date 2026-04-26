@@ -466,7 +466,29 @@
                 <a href="prob-homepage.html" class="enter-btn">Enter Probability</a>
             </div>
         </div>
-
+<script>    
+	// Security Measures to disable right-click and F12/developer shortcuts
+    document.addEventListener('contextmenu', event => event.preventDefault());
+    
+    document.addEventListener('keydown', function(event) {
+        // Prevent F12
+        if (event.key === 'F12' || event.keyCode === 123) {
+            event.preventDefault();
+        }
+        // Prevent Ctrl+Shift+I (Inspector)
+        if (event.ctrlKey && event.shiftKey && (event.key === 'I' || event.key === 'i' || event.keyCode === 73)) {
+            event.preventDefault();
+        }
+        // Prevent Ctrl+Shift+J (Console)
+        if (event.ctrlKey && event.shiftKey && (event.key === 'J' || event.key === 'j' || event.keyCode === 74)) {
+            event.preventDefault();
+        }
+        // Prevent Ctrl+U (View Source)
+        if (event.ctrlKey && (event.key === 'U' || event.key === 'u' || event.keyCode === 85)) {
+            event.preventDefault();
+        }
+    });
+</script>
     </div>
 </div>
 
